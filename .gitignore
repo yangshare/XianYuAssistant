@@ -38,3 +38,6 @@ build/
 *.db
 *.db-journal
 /logs/
+
+### claude code ###
+/.claude/

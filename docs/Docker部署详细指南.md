@@ -408,7 +408,7 @@ docker stats xianyu-assistant --no-stream
 
 如果遇到问题：
 
-1. 查看 [常见问题](README.md#常见问题)
+1. 查看 [常见问题](../README.md#常见问题)
 2. 查看容器日志: `docker-compose logs -f`
 3. 提交 [Issue (Gitee)](https://gitee.com/lzy2018cn/xian-yu-assistant/issues) 或 [Issue (GitHub)](https://github.com/IAMLZY2018/-XianYuAssistant/issues)
 

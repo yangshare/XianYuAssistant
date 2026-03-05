@@ -12,7 +12,7 @@ if exist "..\src\main\resources\static" (
 
 echo.
 echo [2/3] 构建 Vue 项目...
-call npm run build
+call pnpm run build
 
 if %errorlevel% neq 0 (
     echo.

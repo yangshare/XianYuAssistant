@@ -79,6 +79,8 @@ docker compose up -d
 
 访问 `http://localhost:12400`
 
+> 📖 **详细部署指南**: 查看 [Docker部署详细指南](docs/Docker部署详细指南.md) 了解完整的部署流程、配置说明和故障排查。
+
 </details>
 
 <details>
@@ -128,6 +130,8 @@ cd vue-code && npm install && npm run build && cd ..
 2. 访问 https://www.goofish.com/im 完成滑块验证
 3. 手动更新 Cookie 和 Token
 
+> 📖 **深入了解**: 查看 [闲鱼WebSocket消息处理完整流程](docs/闲鱼WebSocket消息处理完整流程.md) 了解 WebSocket 连接、消息处理和自动发货的完整技术细节。
+
 </details>
 
 <details>
@@ -147,6 +151,15 @@ cd vue-code && npm install && npm run build && cd ..
 ## 📄 许可证
 
 [MIT License](LICENSE)
+
+## 📚 深入阅读
+
+想要深入了解系统技术细节？查看以下文档：
+
+| 文档 | 描述 |
+|:---|:---|
+| [Docker部署详细指南](docs/Docker部署详细指南.md) | Docker 完整部署流程、配置说明、故障排查和生产环境建议 |
+| [闲鱼WebSocket消息处理完整流程](docs/闲鱼WebSocket消息处理完整流程.md) | WebSocket 连接建立、消息解析、事件驱动和自动发货的技术实现 |
 
 ## 🤝 致谢
 

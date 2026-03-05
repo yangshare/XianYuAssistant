@@ -3,7 +3,7 @@
 ## 已完成的工作
 
 ### ✅ 1. 项目初始化
-- 使用 `npm create vue@latest` 创建 Vue3 + TypeScript 项目
+- 使用 `pnpm create vue@latest` 创建 Vue3 + TypeScript 项目
 - 安装必要依赖：Element Plus、Axios、图标库
 - 配置 Vite（代理、构建选项）
 
@@ -130,13 +130,12 @@ src/views/[page]/
 
 ### 4. 测试
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ### 5. 构建部署
 ```bash
-npm run build
-xcopy /E /I /Y dist\* ..\src\main\resources\static\
+pnpm run build
 ```
 
 ## 技术栈对比
@@ -166,10 +165,10 @@ xcopy /E /I /Y dist\* ..\src\main\resources\static\
 ```bash
 # 开发
 cd vue-code
-npm run dev
+pnpm run dev
 
 # 构建
-npm run build
+pnpm run build
 
 # 部署
 xcopy /E /I /Y dist\* ..\src\main\resources\static\

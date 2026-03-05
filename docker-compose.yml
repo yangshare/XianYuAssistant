@@ -30,7 +30,3 @@ services:
 networks:
   xianyu-network:
     driver: bridge
-
-volumes:
-  data:
-  logs:

@@ -23,8 +23,8 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
      * @return 自动发货配置
      */
     @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
-            "strftime('%Y-%m-%d %H:%M:%S', create_time) as create_time, " +
-            "strftime('%Y-%m-%d %H:%M:%S', update_time) as update_time " +
+            "DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') as create_time, " +
+            "DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') as update_time " +
             "FROM xianyu_goods_auto_delivery_config " +
             "WHERE xianyu_account_id = #{xianyuAccountId} AND xy_goods_id = #{xyGoodsId} " +
             "LIMIT 1")
@@ -38,8 +38,8 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
      * @return 自动发货配置列表
      */
     @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
-            "strftime('%Y-%m-%d %H:%M:%S', create_time) as create_time, " +
-            "strftime('%Y-%m-%d %H:%M:%S', update_time) as update_time " +
+            "DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') as create_time, " +
+            "DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') as update_time " +
             "FROM xianyu_goods_auto_delivery_config " +
             "WHERE xianyu_account_id = #{xianyuAccountId} " +
             "ORDER BY create_time DESC")

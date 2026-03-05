@@ -97,6 +97,14 @@ const handleLoginSuccess = async () => {
       const scannedUnb = cookieData?.unb || ''
 
       console.log('扫码UNB:', scannedUnb, '当前UNB:', props.currentUnb)
+      console.log('获取到的Cookie:', cookieText)
+
+      // 检查Cookie是否有效
+      if (!cookieText || cookieText === '{}' || cookieText === 'null') {
+        showError('获取Cookie失败，请重试')
+        handleClose()
+        return
+      }
 
       // 判断扫码账号是否与当前账号匹配
       if (scannedUnb === props.currentUnb) {

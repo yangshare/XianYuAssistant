@@ -41,12 +41,12 @@ public class DatabaseFixer implements ApplicationListener<ApplicationReadyEvent>
                 log.info("发现自动发货配置表中存在时间字段为null的记录，开始修复...");
                 
                 // 修复创建时间字段
-                String fixCreateTimeSql = "UPDATE xianyu_goods_auto_delivery_config SET create_time = datetime('now') WHERE create_time IS NULL";
+                String fixCreateTimeSql = "UPDATE xianyu_goods_auto_delivery_config SET create_time = NOW() WHERE create_time IS NULL";
                 int createTimeFixed = jdbcTemplate.update(fixCreateTimeSql);
                 log.info("修复了 {} 条记录的创建时间字段", createTimeFixed);
-                
+
                 // 修复更新时间字段
-                String fixUpdateTimeSql = "UPDATE xianyu_goods_auto_delivery_config SET update_time = datetime('now') WHERE update_time IS NULL";
+                String fixUpdateTimeSql = "UPDATE xianyu_goods_auto_delivery_config SET update_time = NOW() WHERE update_time IS NULL";
                 int updateTimeFixed = jdbcTemplate.update(fixUpdateTimeSql);
                 log.info("修复了 {} 条记录的更新时间字段", updateTimeFixed);
             } else {

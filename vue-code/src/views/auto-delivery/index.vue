@@ -370,7 +370,7 @@ const extractOrderId = (content: string): string | null => {
   try {
     // 尝试解析 JSON
     const data = JSON.parse(content);
-    
+
     // 从 reminderUrl 中提取订单ID
     // 格式: fleamarket://order_detail?id=3052762719755595568&role=seller
     const reminderUrl = data?.['1']?.['6']?.['10']?.reminderUrl || '';
@@ -378,14 +378,14 @@ const extractOrderId = (content: string): string | null => {
     if (match && match[1]) {
       return match[1];
     }
-    
+
     // 如果 reminderUrl 中没有，尝试从 targetUrl 中提取
     const targetUrl = data?.['1']?.['6']?.['5']?.['1']?.['1']?.['1']?.main?.targetUrl || '';
     const match2 = targetUrl.match(/[?&]id=(\d+)/);
     if (match2 && match2[1]) {
       return match2[1];
     }
-    
+
     return null;
   } catch (error) {
     console.error('解析订单ID失败:', error);
@@ -403,7 +403,7 @@ onMounted(() => {
     <div class="page-header">
       <h1 class="page-title">自动发货配置</h1>
       <div class="header-actions">
-        <span class="account-label">选择闲鱼账号</span>
+        <span class="account-label">选择某鱼账号</span>
         <el-select
           v-model="selectedAccountId"
           placeholder="选择账号"
@@ -530,8 +530,8 @@ onMounted(() => {
                     {{ configForm.autoConfirmShipment === 1 ? '已开启' : '已关闭' }}
                   </span>
                   <div class="form-tip">
-                    {{ selectedGoods.xianyuAutoDeliveryOn === 1 
-                      ? '开启后，自动发货成功将自动确认收货' 
+                    {{ selectedGoods.xianyuAutoDeliveryOn === 1
+                      ? '开启后，自动发货成功将自动确认收货'
                       : '需要先开启自动发货' }}
                   </div>
                 </el-form-item>
@@ -578,7 +578,7 @@ onMounted(() => {
                   </el-button>
                 </div>
               </div>
-              
+
               <div class="records-table-wrapper" v-loading="recordsLoading">
                 <el-table
                   :data="deliveryRecords"
@@ -642,7 +642,7 @@ onMounted(() => {
                     <el-empty description="暂无发货记录" :image-size="80" />
                   </template>
                 </el-table>
-                
+
                 <div class="pagination-container-bottom" v-if="recordsTotal > 0 && recordsExpanded">
                   <el-pagination
                     v-model:current-page="recordsPageNum"

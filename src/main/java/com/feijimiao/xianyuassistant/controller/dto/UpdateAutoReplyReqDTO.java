@@ -9,12 +9,12 @@ import lombok.Data;
 public class UpdateAutoReplyReqDTO {
     
     /**
-     * 闲鱼账号ID
+     * 某鱼账号ID
      */
     private Long xianyuAccountId;
     
     /**
-     * 闲鱼商品ID
+     * 某鱼商品ID
      */
     private String xyGoodsId;
     

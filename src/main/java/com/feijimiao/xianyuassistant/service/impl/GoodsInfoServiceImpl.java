@@ -70,7 +70,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService {
             // 商品详情页URL
             goodsInfo.setDetailUrl(itemDTO.getDetailUrl());
             
-            // 关联闲鱼账号ID
+            // 关联某鱼账号ID
             goodsInfo.setXianyuAccountId(xianyuAccountId);
             
             // 价格信息
@@ -137,7 +137,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService {
             queryWrapper.eq(XianyuGoodsInfo::getXyGoodId, xyGoodId);
             return goodsInfoMapper.selectOne(queryWrapper);
         } catch (Exception e) {
-            log.error("根据闲鱼商品ID查询商品信息失败: xyGoodId={}", xyGoodId, e);
+            log.error("根据某鱼商品ID查询商品信息失败: xyGoodId={}", xyGoodId, e);
             return null;
         }
     }

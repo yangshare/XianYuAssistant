@@ -132,7 +132,7 @@ public class ChatMessageEventAutoDeliveryListener {
             XianyuGoodsAutoDeliveryRecord record = new XianyuGoodsAutoDeliveryRecord();
             record.setXianyuAccountId(message.getXianyuAccountId());
             record.setXianyuGoodsId(goodsInfo.getId()); // 设置本地商品表ID
-            record.setXyGoodsId(message.getXyGoodsId()); // 设置闲鱼商品ID
+            record.setXyGoodsId(message.getXyGoodsId()); // 设置某鱼商品ID
             record.setPnmId(message.getPnmId()); // 设置消息pnmId，用于防重复
             record.setBuyerUserId(message.getSenderUserId());
             record.setBuyerUserName(buyerUserName);

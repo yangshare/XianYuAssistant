@@ -17,7 +17,7 @@ const router = createRouter({
       path: '/accounts',
       name: 'accounts',
       component: () => import('@/views/accounts/index.vue'),
-      meta: { title: '闲鱼账号', icon: '👤' }
+      meta: { title: '某鱼账号', icon: '👤' }
     },
     {
       path: '/connection',

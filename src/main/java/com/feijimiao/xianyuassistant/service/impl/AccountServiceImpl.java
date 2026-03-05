@@ -431,33 +431,33 @@ public class AccountServiceImpl implements AccountService {
         try {
             log.info("开始删除账号及其所有关联数据: accountId={}", accountId);
             
-            // 1. 删除闲鱼聊天消息表数据
+            // 1. 删除某鱼聊天消息表数据
             int chatMessageCount = chatMessageMapper.deleteByAccountId(accountId);
             log.info("删除聊天消息数据: accountId={}, 删除数量={}", accountId, chatMessageCount);
             
-            // 2. 删除闲鱼商品信息表数据
+            // 2. 删除某鱼商品信息表数据
             LambdaQueryWrapper<XianyuGoodsInfo> goodsInfoQuery = new LambdaQueryWrapper<>();
             goodsInfoQuery.eq(XianyuGoodsInfo::getXianyuAccountId, accountId);
             int goodsInfoCount = goodsInfoMapper.delete(goodsInfoQuery);
             log.info("删除商品信息数据: accountId={}, 删除数量={}", accountId, goodsInfoCount);
             
-            // 3. 删除闲鱼商品配置表数据
+            // 3. 删除某鱼商品配置表数据
             int goodsConfigCount = goodsConfigMapper.deleteByAccountId(accountId);
             log.info("删除商品配置数据: accountId={}, 删除数量={}", accountId, goodsConfigCount);
             
-            // 4. 删除闲鱼商品自动发货配置表数据
+            // 4. 删除某鱼商品自动发货配置表数据
             int autoDeliveryConfigCount = autoDeliveryConfigMapper.deleteByAccountId(accountId);
             log.info("删除自动发货配置数据: accountId={}, 删除数量={}", accountId, autoDeliveryConfigCount);
             
-            // 5. 删除闲鱼商品自动发货记录表数据
+            // 5. 删除某鱼商品自动发货记录表数据
             int autoDeliveryRecordCount = autoDeliveryRecordMapper.deleteByAccountId(accountId);
             log.info("删除自动发货记录数据: accountId={}, 删除数量={}", accountId, autoDeliveryRecordCount);
             
-            // 6. 删除闲鱼商品自动回复配置表数据
+            // 6. 删除某鱼商品自动回复配置表数据
             int autoReplyConfigCount = autoReplyConfigMapper.deleteByAccountId(accountId);
             log.info("删除自动回复配置数据: accountId={}, 删除数量={}", accountId, autoReplyConfigCount);
             
-            // 7. 删除闲鱼商品自动回复记录表数据
+            // 7. 删除某鱼商品自动回复记录表数据
             int autoReplyRecordCount = autoReplyRecordMapper.deleteByAccountId(accountId);
             log.info("删除自动回复记录数据: accountId={}, 删除数量={}", accountId, autoReplyRecordCount);
             
@@ -465,13 +465,13 @@ public class AccountServiceImpl implements AccountService {
             int operationLogCount = operationLogMapper.deleteByAccountId(accountId);
             log.info("删除操作记录数据: accountId={}, 删除数量={}", accountId, operationLogCount);
             
-            // 9. 删除闲鱼Cookie表数据
+            // 9. 删除某鱼Cookie表数据
             LambdaQueryWrapper<XianyuCookie> cookieQuery = new LambdaQueryWrapper<>();
             cookieQuery.eq(XianyuCookie::getXianyuAccountId, accountId);
             int cookieCount = cookieMapper.delete(cookieQuery);
             log.info("删除Cookie数据: accountId={}, 删除数量={}", accountId, cookieCount);
             
-            // 10. 删除闲鱼账号表数据
+            // 10. 删除某鱼账号表数据
             int accountCount = accountMapper.deleteById(accountId);
             log.info("删除账号数据: accountId={}, 删除数量={}", accountId, accountCount);
             

@@ -9,7 +9,7 @@ import lombok.Data;
 public class ItemDetailReqDTO {
     
     /**
-     * 闲鱼商品ID
+     * 某鱼商品ID
      */
     private String xyGoodId;
     

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 闲鱼签名工具类
+ * 某鱼签名工具类
  */
 @Slf4j
 public class XianyuSignUtils {

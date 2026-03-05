@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
- * 闲鱼商品信息DTO
+ * 某鱼商品信息DTO
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

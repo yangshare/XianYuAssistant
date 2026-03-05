@@ -8,7 +8,7 @@ import lombok.Data;
 
 
 /**
- * 闲鱼账号实体类
+ * 某鱼账号实体类
  */
 @Data
 @TableName("xianyu_account")
@@ -21,7 +21,7 @@ public class XianyuAccount {
     private Long id;
     
     /**
-     * 闲鱼账号备注
+     * 某鱼账号备注
      */
     private String accountNote;
     

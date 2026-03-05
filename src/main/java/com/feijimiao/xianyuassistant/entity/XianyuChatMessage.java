@@ -4,7 +4,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 闲鱼聊天消息实体
+ * 某鱼聊天消息实体
  */
 @Data
 public class XianyuChatMessage {
@@ -31,7 +31,7 @@ public class XianyuChatMessage {
     
     // 消息链接
     private String reminderUrl;            // 消息链接，对应1.10.reminderUrl
-    private String xyGoodsId;              // 闲鱼商品ID，从reminder_url中的itemId参数解析
+    private String xyGoodsId;              // 某鱼商品ID，从reminder_url中的itemId参数解析
     
     // 完整消息体
     private String completeMsg;            // 完整的消息体JSON

@@ -89,7 +89,7 @@ const selectAccount = (accountId: number) => {
 // 加载操作记录
 const loadLogs = async () => {
   if (!selectedAccountId.value) return;
-  
+
   loading.value = true;
   try {
     const response = await queryOperationLogs({
@@ -100,7 +100,7 @@ const loadLogs = async () => {
       page: page.value,
       pageSize: pageSize.value
     });
-    
+
     if (response.code === 0 || response.code === 200) {
       logs.value = response.data?.logs || [];
       total.value = response.data?.total || 0;
@@ -272,7 +272,7 @@ const viewDetail = (log: OperationLog) => {
     content += `<p><strong>耗时：</strong>${formatDuration(log.durationMs)}</p>`;
   }
   content += `</div>`;
-  
+
   ElMessageBox({
     title: '操作详情',
     message: content,
@@ -298,10 +298,10 @@ onMounted(() => {
       <el-card class="account-panel">
         <template #header>
           <div class="panel-header">
-            <span class="panel-title">闲鱼账号</span>
+            <span class="panel-title">某鱼账号</span>
           </div>
         </template>
-        
+
         <div v-loading="loading" class="account-list">
           <div
             v-for="account in accounts"
@@ -316,7 +316,7 @@ onMounted(() => {
               <div class="account-id">ID: {{ account.id }}</div>
             </div>
           </div>
-          
+
           <el-empty
             v-if="!loading && accounts.length === 0"
             description="暂无账号数据"
@@ -336,7 +336,7 @@ onMounted(() => {
             </div>
           </div>
         </template>
-        
+
         <div v-if="!selectedAccountId" class="empty-state">
           <el-empty description="请选择一个账号查看操作记录" :image-size="100" />
         </div>
@@ -352,7 +352,7 @@ onMounted(() => {
                 :value="item.value"
               />
             </el-select>
-            
+
             <el-select v-model="filterModule" placeholder="操作模块" clearable style="width: 120px;">
               <el-option
                 v-for="item in operationModules"
@@ -361,7 +361,7 @@ onMounted(() => {
                 :value="item.value"
               />
             </el-select>
-            
+
             <el-select v-model="filterStatus" placeholder="操作状态" clearable style="width: 120px;">
               <el-option
                 v-for="item in operationStatuses"
@@ -370,7 +370,7 @@ onMounted(() => {
                 :value="item.value"
               />
             </el-select>
-            
+
             <el-button type="primary" @click="handleFilter">筛选</el-button>
             <el-button @click="handleResetFilter">重置</el-button>
           </div>
@@ -384,7 +384,7 @@ onMounted(() => {
             :height="500"
           >
             <el-table-column prop="id" label="ID" width="80" />
-            
+
             <el-table-column label="操作类型" width="140">
               <template #default="{ row }">
                 <el-tag :type="getOperationTypeTag(row.operationType)" size="small">
@@ -392,11 +392,11 @@ onMounted(() => {
                 </el-tag>
               </template>
             </el-table-column>
-            
+
             <el-table-column prop="operationModule" label="模块" width="100" />
-            
+
             <el-table-column prop="operationDesc" label="操作描述" min-width="200" show-overflow-tooltip />
-            
+
             <el-table-column label="状态" width="100">
               <template #default="{ row }">
                 <el-tag :type="getStatusTag(row.operationStatus)" size="small">
@@ -404,19 +404,19 @@ onMounted(() => {
                 </el-tag>
               </template>
             </el-table-column>
-            
+
             <el-table-column label="耗时" width="100">
               <template #default="{ row }">
                 {{ formatDuration(row.durationMs) }}
               </template>
             </el-table-column>
-            
+
             <el-table-column label="时间" width="180">
               <template #default="{ row }">
                 {{ formatTime(row.createTime) }}
               </template>
             </el-table-column>
-            
+
             <el-table-column label="操作" width="100" fixed="right">
               <template #default="{ row }">
                 <el-button type="primary" size="small" link @click="viewDetail(row)">

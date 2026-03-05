@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 闲鱼商品信息实体类
+ * 某鱼商品信息实体类
  */
 @Data
 @TableName("xianyu_goods")
@@ -19,7 +19,7 @@ public class XianyuGoodsInfo {
     private Long id;
     
     /**
-     * 闲鱼商品ID
+     * 某鱼商品ID
      */
     private String xyGoodId;
     
@@ -49,7 +49,7 @@ public class XianyuGoodsInfo {
     private String detailUrl;
     
     /**
-     * 关联的闲鱼账号ID
+     * 关联的某鱼账号ID
      */
     private Long xianyuAccountId;
     

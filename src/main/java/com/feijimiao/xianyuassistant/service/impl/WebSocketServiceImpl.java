@@ -47,7 +47,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     private final Map<Long, ScheduledFuture<?>> heartbeatTasks = new ConcurrentHashMap<>();
 
     /**
-     * 闲鱼WebSocket URL
+     * 某鱼WebSocket URL
      * 参考Python代码：wss://wss-goofish.dingtalk.com/
      */
     private static final String WEBSOCKET_URL = "wss://wss-goofish.dingtalk.com/";

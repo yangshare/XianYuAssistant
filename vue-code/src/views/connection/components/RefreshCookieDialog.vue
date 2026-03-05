@@ -56,7 +56,7 @@ const startPolling = () => {
       if (response.code === 200) {
         const data = response.data
         status.value = data?.status || 'pending'
-        
+
         switch (data?.status) {
           case 'pending':
             statusText.value = '等待扫码...'
@@ -95,9 +95,9 @@ const handleLoginSuccess = async () => {
       const cookieData = cookieRes.data as any
       const cookieText = typeof cookieData?.cookies === 'string' ? cookieData.cookies : JSON.stringify(cookieData?.cookies || {})
       const scannedUnb = cookieData?.unb || ''
-      
+
       console.log('扫码UNB:', scannedUnb, '当前UNB:', props.currentUnb)
-      
+
       // 判断扫码账号是否与当前账号匹配
       if (scannedUnb === props.currentUnb) {
         // 匹配，更新Cookie
@@ -106,7 +106,7 @@ const handleLoginSuccess = async () => {
             xianyuAccountId: props.accountId,
             cookieText
           })
-          
+
           // request拦截器会自动处理错误，这里只处理成功的情况
           if (updateRes.code === 200) {
             showSuccess('Cookie刷新成功')
@@ -161,19 +161,19 @@ const handleClose = () => {
         <img v-if="qrCodeUrl" :src="qrCodeUrl" alt="二维码" class="qr-code" />
         <el-skeleton v-else animated />
       </div>
-      
-      <p class="qr-tip">请使用闲鱼APP扫描二维码登录</p>
+
+      <p class="qr-tip">请使用某鱼APP扫描二维码登录</p>
       <p class="qr-warning">请确保扫码账号与当前账号一致</p>
-      
+
       <div class="qr-status">
         <el-tag :type="status === 'confirmed' ? 'success' : 'info'">
           {{ statusText }}
         </el-tag>
       </div>
-      
+
       <p v-if="sessionId" class="session-id">会话ID: {{ sessionId }}</p>
     </div>
-    
+
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
     </template>

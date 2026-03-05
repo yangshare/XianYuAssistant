@@ -14,7 +14,7 @@ public interface GoodsInfoService {
      * 保存或更新商品信息
      *
      * @param itemDTO 商品信息DTO
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 是否保存成功
      */
     boolean saveOrUpdateGoodsInfo(ItemDTO itemDTO, Long xianyuAccountId);
@@ -23,15 +23,15 @@ public interface GoodsInfoService {
      * 批量保存或更新商品信息
      *
      * @param itemList 商品信息列表
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 成功保存的商品数量
      */
     int batchSaveOrUpdateGoodsInfo(List<ItemDTO> itemList, Long xianyuAccountId);
     
     /**
-     * 根据闲鱼商品ID获取商品信息
+     * 根据某鱼商品ID获取商品信息
      *
-     * @param xyGoodId 闲鱼商品ID
+     * @param xyGoodId 某鱼商品ID
      * @return 商品信息
      */
     XianyuGoodsInfo getByXyGoodId(String xyGoodId);
@@ -57,7 +57,7 @@ public interface GoodsInfoService {
     /**
      * 更新商品详情信息
      *
-     * @param xyGoodId 闲鱼商品ID
+     * @param xyGoodId 某鱼商品ID
      * @param detailInfo 商品详情信息
      * @return 是否更新成功
      */
@@ -66,8 +66,8 @@ public interface GoodsInfoService {
     /**
      * 删除商品信息
      *
-     * @param xianyuAccountId 闲鱼账号ID
-     * @param xyGoodId 闲鱼商品ID
+     * @param xianyuAccountId 某鱼账号ID
+     * @param xyGoodId 某鱼商品ID
      * @return 是否删除成功
      */
     boolean deleteGoodsInfo(Long xianyuAccountId, String xyGoodId);

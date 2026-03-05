@@ -31,7 +31,7 @@ public interface AutoDeliveryConfigService {
     /**
      * 根据账号ID查询所有配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 配置列表
      */
     ResultObject<List<AutoDeliveryConfigRespDTO>> getConfigsByAccountId(Long xianyuAccountId);
@@ -39,8 +39,8 @@ public interface AutoDeliveryConfigService {
     /**
      * 删除配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
-     * @param xyGoodsId 闲鱼商品ID
+     * @param xianyuAccountId 某鱼账号ID
+     * @param xyGoodsId 某鱼商品ID
      * @return 操作结果
      */
     ResultObject<Void> deleteConfig(Long xianyuAccountId, String xyGoodsId);

@@ -18,8 +18,8 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
     /**
      * 根据账号ID和商品ID查询配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
-     * @param xyGoodsId 闲鱼商品ID
+     * @param xianyuAccountId 某鱼账号ID
+     * @param xyGoodsId 某鱼商品ID
      * @return 自动发货配置
      */
     @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
@@ -34,7 +34,7 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
     /**
      * 根据账号ID查询所有配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 自动发货配置列表
      */
     @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
@@ -48,7 +48,7 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
     /**
      * 根据账号ID删除自动发货配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 删除的记录数量
      */
     @Delete("DELETE FROM xianyu_goods_auto_delivery_config WHERE xianyu_account_id = #{xianyuAccountId}")

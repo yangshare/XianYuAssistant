@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
             
             if (response == null) {
                 log.error("API调用失败：响应为空");
-                return ResultObject.failed("请求闲鱼API失败");
+                return ResultObject.failed("请求某鱼API失败");
             }
             
             log.info("API调用成功，响应长度: {}", response.length());
@@ -451,10 +451,10 @@ public class ItemServiceImpl implements ItemService {
     }
     
     /**
-     * 从闲鱼API获取商品详情
+     * 从某鱼API获取商品详情
      * 实现流程：
      * 1. 检查缓存（24小时内的详情不重复获取）
-     * 2. 首选：通过闲鱼API mtop.taobao.idle.pc.detail 获取
+     * 2. 首选：通过某鱼API mtop.taobao.idle.pc.detail 获取
      * 3. 备选：如果API失败，可以考虑使用浏览器访问（需要额外实现）
      *
      * @param itemId 商品ID
@@ -488,7 +488,7 @@ public class ItemServiceImpl implements ItemService {
             
             log.info("Cookie获取成功，准备调用API: itemId={}", itemId);
             
-            // 3. 首选方式：通过闲鱼API获取商品详情
+            // 3. 首选方式：通过某鱼API获取商品详情
             String detailJson = fetchDetailFromApi(itemId, cookiesStr);
             
             if (detailJson != null && !detailJson.isEmpty()) {
@@ -515,7 +515,7 @@ public class ItemServiceImpl implements ItemService {
     }
     
     /**
-     * 通过闲鱼API获取商品详情
+     * 通过某鱼API获取商品详情
      *
      * @param itemId 商品ID
      * @param cookiesStr Cookie字符串
@@ -523,13 +523,13 @@ public class ItemServiceImpl implements ItemService {
      */
     private String fetchDetailFromApi(String itemId, String cookiesStr) {
         try {
-            log.info("调用闲鱼API获取商品详情: itemId={}", itemId);
+            log.info("调用某鱼API获取商品详情: itemId={}", itemId);
             
             // 构建请求数据
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("itemId", itemId);
             
-            // 调用闲鱼API
+            // 调用某鱼API
             String response = XianyuApiUtils.callApi(
                 "mtop.taobao.idle.pc.detail",
                 dataMap,

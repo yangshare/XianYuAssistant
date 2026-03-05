@@ -139,7 +139,7 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
             // 4. 从sId中提取cid和toId
             // sId格式: "55435931514@goofish"
             String cid = sId.replace("@goofish", "");
-            String toId = cid; // 对于闲鱼，cid和toId通常相同
+            String toId = cid; // 对于某鱼，cid和toId通常相同
             
             // 5. 发送消息
             boolean success = webSocketService.sendMessage(accountId, cid, toId, content);

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 /**
- * 闲鱼聊天消息Mapper
+ * 某鱼聊天消息Mapper
  */
 @Mapper
 public interface XianyuChatMessageMapper {

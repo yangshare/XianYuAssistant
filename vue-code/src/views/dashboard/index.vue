@@ -15,21 +15,21 @@ const activeStep = ref(0);
 // 快速开始步骤
 const quickStartSteps = [
   {
-    title: '1. 添加闲鱼账号',
+    title: '1. 添加某鱼账号',
     icon: '👤',
-    description: '通过扫码登录添加您的闲鱼账号',
+    description: '通过扫码登录添加您的某鱼账号',
     route: '/accounts',
     details: [
-      '点击左侧菜单"闲鱼账号"',
+      '点击左侧菜单"某鱼账号"',
       '点击"扫码登录"按钮',
-      '使用闲鱼APP扫描二维码',
+      '使用某鱼APP扫描二维码',
       '等待登录成功，账号自动添加'
     ]
   },
   {
     title: '2. 启动WebSocket连接',
     icon: '🔗',
-    description: '建立与闲鱼服务器的实时连接',
+    description: '建立与某鱼服务器的实时连接',
     route: '/connection',
     details: [
       '进入"连接管理"页面',
@@ -41,7 +41,7 @@ const quickStartSteps = [
   {
     title: '3. 同步商品信息',
     icon: '📦',
-    description: '获取您的闲鱼商品列表',
+    description: '获取您的某鱼商品列表',
     route: '/goods',
     details: [
       '进入"商品管理"页面',
@@ -69,7 +69,7 @@ const features = [
   {
     icon: '👥',
     title: '多账号管理',
-    description: '支持同时管理多个闲鱼账号，轻松切换',
+    description: '支持同时管理多个某鱼账号，轻松切换',
     color: '#409eff'
   },
   {
@@ -140,12 +140,12 @@ const navigateTo = (route: string) => {
             <div class="stat-icon account-icon">👤</div>
             <div class="stat-info">
               <div class="stat-value">{{ stats.accountCount }}</div>
-              <div class="stat-label">闲鱼账号</div>
+              <div class="stat-label">某鱼账号</div>
             </div>
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-content">
@@ -157,7 +157,7 @@ const navigateTo = (route: string) => {
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card shadow="hover" class="stat-card">
           <div class="stat-content">
@@ -179,10 +179,10 @@ const navigateTo = (route: string) => {
           <span class="card-subtitle">4步完成系统配置，开启自动化之旅</span>
         </div>
       </template>
-      
+
       <el-steps :active="activeStep" align-center class="steps-container">
-        <el-step 
-          v-for="(step, index) in quickStartSteps" 
+        <el-step
+          v-for="(step, index) in quickStartSteps"
           :key="index"
           :title="step.title"
           :icon="step.icon"
@@ -191,13 +191,13 @@ const navigateTo = (route: string) => {
 
       <div class="steps-content">
         <el-row :gutter="20">
-          <el-col 
-            :span="6" 
-            v-for="(step, index) in quickStartSteps" 
+          <el-col
+            :span="6"
+            v-for="(step, index) in quickStartSteps"
             :key="index"
           >
-            <el-card 
-              shadow="hover" 
+            <el-card
+              shadow="hover"
               class="step-card"
               :class="{ active: activeStep === index }"
               @click="activeStep = index"
@@ -210,9 +210,9 @@ const navigateTo = (route: string) => {
                   {{ detail }}
                 </li>
               </ul>
-              <el-button 
-                type="primary" 
-                size="small" 
+              <el-button
+                type="primary"
+                size="small"
                 @click.stop="navigateTo(step.route)"
                 class="step-button"
               >
@@ -232,7 +232,7 @@ const navigateTo = (route: string) => {
           <span class="card-subtitle">强大的自动化功能，提升您的工作效率</span>
         </div>
       </template>
-      
+
       <el-row :gutter="20">
         <el-col :span="8" v-for="(feature, index) in features" :key="index">
           <el-card shadow="hover" class="feature-card">
@@ -254,10 +254,10 @@ const navigateTo = (route: string) => {
           <span class="card-subtitle">快速解答您的疑问</span>
         </div>
       </template>
-      
+
       <el-collapse accordion>
-        <el-collapse-item 
-          v-for="(faq, index) in faqs" 
+        <el-collapse-item
+          v-for="(faq, index) in faqs"
           :key="index"
           :name="index"
         >

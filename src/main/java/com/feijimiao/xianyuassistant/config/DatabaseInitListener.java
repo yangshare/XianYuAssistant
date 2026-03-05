@@ -90,7 +90,7 @@ public class DatabaseInitListener implements ApplicationListener<ApplicationRead
         // 定义需要的表及其创建SQL
         Map<String, String> requiredTables = new LinkedHashMap<>();
         
-        // 闲鱼账号表
+        // 某鱼账号表
         requiredTables.put("xianyu_account", 
             "CREATE TABLE xianyu_account (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -101,7 +101,7 @@ public class DatabaseInitListener implements ApplicationListener<ApplicationRead
             "updated_time DATETIME DEFAULT CURRENT_TIMESTAMP" +
             ")");
         
-        // 闲鱼Cookie表
+        // 某鱼Cookie表
         requiredTables.put("xianyu_cookie",
             "CREATE TABLE xianyu_cookie (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -117,7 +117,7 @@ public class DatabaseInitListener implements ApplicationListener<ApplicationRead
             "FOREIGN KEY (xianyu_account_id) REFERENCES xianyu_account(id)" +
             ")");
         
-        // 闲鱼商品信息表
+        // 某鱼商品信息表
         requiredTables.put("xianyu_goods",
             "CREATE TABLE xianyu_goods (" +
             "id BIGINT PRIMARY KEY, " +
@@ -135,7 +135,7 @@ public class DatabaseInitListener implements ApplicationListener<ApplicationRead
             "FOREIGN KEY (xianyu_account_id) REFERENCES xianyu_account(id)" +
             ")");
         
-        // 闲鱼聊天消息表
+        // 某鱼聊天消息表
         requiredTables.put("xianyu_chat_message",
             "CREATE TABLE xianyu_chat_message (" +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +

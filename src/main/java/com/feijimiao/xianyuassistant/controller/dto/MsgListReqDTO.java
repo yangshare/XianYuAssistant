@@ -9,12 +9,12 @@ import lombok.Data;
 public class MsgListReqDTO {
     
     /**
-     * 闲鱼账号ID（必选）
+     * 某鱼账号ID（必选）
      */
     private Long xianyuAccountId;
     
     /**
-     * 闲鱼商品ID（可选）
+     * 某鱼商品ID（可选）
      */
     private String xyGoodsId;
     

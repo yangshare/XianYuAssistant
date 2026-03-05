@@ -15,7 +15,7 @@ public class ItemListFromDbReqDTO {
     private Integer status = 0;
     
     /**
-     * 闲鱼账号ID（可选）
+     * 某鱼账号ID（可选）
      */
     private Long xianyuAccountId;
     

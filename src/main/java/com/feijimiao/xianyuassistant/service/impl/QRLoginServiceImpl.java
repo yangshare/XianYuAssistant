@@ -82,7 +82,7 @@ public class QRLoginServiceImpl implements QRLoginService {
     
     /**
      * 获取_m_h5_tk token
-     * 这个token是闲鱼API调用必需的，用于签名验证
+     * 这个token是某鱼API调用必需的，用于签名验证
      */
     private void getMh5tk(QRLoginSession session) throws IOException {
         log.info("开始获取_m_h5_tk token...");

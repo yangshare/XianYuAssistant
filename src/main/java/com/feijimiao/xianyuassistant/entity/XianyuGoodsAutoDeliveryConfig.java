@@ -19,17 +19,17 @@ public class XianyuGoodsAutoDeliveryConfig {
     private Long id;
     
     /**
-     * 闲鱼账号ID
+     * 某鱼账号ID
      */
     private Long xianyuAccountId;
     
     /**
-     * 本地闲鱼商品ID
+     * 本地某鱼商品ID
      */
     private Long xianyuGoodsId;
     
     /**
-     * 闲鱼的商品ID
+     * 某鱼的商品ID
      */
     private String xyGoodsId;
     

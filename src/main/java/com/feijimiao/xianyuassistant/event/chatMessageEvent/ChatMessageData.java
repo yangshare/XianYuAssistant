@@ -15,7 +15,7 @@ public class ChatMessageData {
     private Long id;
     
     /**
-     * 闲鱼账号ID
+     * 某鱼账号ID
      */
     private Long xianyuAccountId;
     
@@ -70,7 +70,7 @@ public class ChatMessageData {
     private String reminderUrl;
     
     /**
-     * 闲鱼商品ID
+     * 某鱼商品ID
      */
     private String xyGoodsId;
     

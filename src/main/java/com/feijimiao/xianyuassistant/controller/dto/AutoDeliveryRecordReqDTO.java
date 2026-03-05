@@ -9,7 +9,7 @@ import lombok.Data;
 public class AutoDeliveryRecordReqDTO {
     
     /**
-     * 闲鱼账号ID
+     * 某鱼账号ID
      */
     private Long xianyuAccountId;
     

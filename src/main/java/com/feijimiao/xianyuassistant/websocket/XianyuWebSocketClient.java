@@ -13,8 +13,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 闲鱼WebSocket客户端
- * 用于监听闲鱼消息
+ * 某鱼WebSocket客户端
+ * 用于监听某鱼消息
  * 参考Python代码的WebSocketClient和消息处理机制
  */
 @Slf4j

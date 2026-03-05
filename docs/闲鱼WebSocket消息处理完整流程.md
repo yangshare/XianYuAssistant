@@ -1,4 +1,4 @@
-# 闲鱼 WebSocket 消息处理完整流程（详细到类）
+# 某鱼 WebSocket 消息处理完整流程（详细到类）
 
 ## 目录
 
@@ -18,7 +18,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        闲鱼 WebSocket 服务器                      │
+│                        某鱼 WebSocket 服务器                      │
 └─────────────────────────────────────────────────────────────────┘
                               ↕ WebSocket 连接
 ┌─────────────────────────────────────────────────────────────────┐
@@ -205,7 +205,7 @@ private boolean connectWebSocket(Long accountId, String cookieStr,
 ### 1. 完整调用链
 
 ```
-闲鱼服务器发送消息
+某鱼服务器发送消息
     ↓
 XianyuWebSocketClient.onMessage(String message)
     ↓
@@ -845,7 +845,7 @@ XianyuWebSocketClient.sendMessage(cid, toId, text)
     ↓
 client.send(messageJson)
     ↓
-WebSocket 发送到闲鱼服务器
+WebSocket 发送到某鱼服务器
 ```
 
 ### 2. WebSocketServiceImpl.sendMessage()
@@ -1085,7 +1085,7 @@ public void sendMessage(String cid, String toId, String text) {
 ```
 时间轴 →
 
-T0: 闲鱼服务器发送消息
+T0: 某鱼服务器发送消息
     ↓
 T1: XianyuWebSocketClient.onMessage() 接收
     ↓

@@ -11,20 +11,20 @@ import jakarta.validation.constraints.NotNull;
 public class AutoDeliveryConfigReqDTO {
     
     /**
-     * 闲鱼账号ID（必选）
+     * 某鱼账号ID（必选）
      */
-    @NotNull(message = "闲鱼账号ID不能为空")
+    @NotNull(message = "某鱼账号ID不能为空")
     private Long xianyuAccountId;
     
     /**
-     * 本地闲鱼商品ID
+     * 本地某鱼商品ID
      */
     private Long xianyuGoodsId;
     
     /**
-     * 闲鱼的商品ID（必选）
+     * 某鱼的商品ID（必选）
      */
-    @NotNull(message = "闲鱼商品ID不能为空")
+    @NotNull(message = "某鱼商品ID不能为空")
     private String xyGoodsId;
     
     /**

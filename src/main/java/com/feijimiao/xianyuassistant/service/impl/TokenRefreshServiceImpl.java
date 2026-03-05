@@ -50,13 +50,13 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
             .build();
     
     /**
-     * 闲鱼API地址（用于刷新_m_h5_tk）
+     * 某鱼API地址（用于刷新_m_h5_tk）
      */
     private static final String API_H5_TK = "https://h5api.m.goofish.com/h5/mtop.gaia.nodejs.gaia.idle.data.gw.v2.index.get/1.0/";
     
     /**
      * 刷新_m_h5_tk token
-     * 通过调用闲鱼API，服务器会返回新的_m_h5_tk
+     * 通过调用某鱼API，服务器会返回新的_m_h5_tk
      */
     @Override
     public boolean refreshMh5tkToken(Long accountId) {

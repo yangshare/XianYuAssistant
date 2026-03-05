@@ -19,7 +19,7 @@ import { RouterView } from 'vue-router'
             <span>📊 仪表板</span>
           </el-menu-item>
           <el-menu-item index="/accounts">
-            <span>👤 闲鱼账号</span>
+            <span>👤 某鱼账号</span>
           </el-menu-item>
           <el-menu-item index="/connection">
             <span>🔗 连接管理</span>
@@ -33,9 +33,9 @@ import { RouterView } from 'vue-router'
           <el-menu-item index="/messages">
             <span>💬 消息管理</span>
           </el-menu-item>
-          
+
           <el-divider content-position="left">自动化</el-divider>
-          
+
           <el-menu-item index="/auto-delivery">
             <span>🤖 自动发货</span>
           </el-menu-item>
@@ -45,15 +45,15 @@ import { RouterView } from 'vue-router'
           <el-menu-item index="/records">
             <span>📝 操作记录</span>
           </el-menu-item>
-          
+
           <el-divider content-position="left">系统</el-divider>
-          
+
           <el-menu-item index="/operation-log">
             <span>📜 操作日志</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
-      
+
       <el-container>
         <el-main>
           <RouterView />
@@ -152,15 +152,15 @@ import { RouterView } from 'vue-router'
   .el-aside {
     width: 60px !important;
   }
-  
+
   .logo-text {
     display: none;
   }
-  
+
   .el-main {
     padding: 16px 20px;
   }
-  
+
   :deep(.el-menu-item span) {
     font-size: 12px;
   }
@@ -170,16 +170,16 @@ import { RouterView } from 'vue-router'
   .el-container {
     flex-direction: column;
   }
-  
+
   .el-aside {
     width: 100% !important;
     height: auto !important;
   }
-  
+
   .logo {
     justify-content: center;
   }
-  
+
   .el-main {
     padding: 10px;
   }

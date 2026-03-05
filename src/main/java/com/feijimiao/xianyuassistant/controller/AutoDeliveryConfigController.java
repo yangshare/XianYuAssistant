@@ -63,7 +63,7 @@ public class AutoDeliveryConfigController {
     /**
      * 根据账号ID查询所有配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
+     * @param xianyuAccountId 某鱼账号ID
      * @return 配置列表
      */
     @PostMapping("/list")
@@ -80,8 +80,8 @@ public class AutoDeliveryConfigController {
     /**
      * 删除自动发货配置
      *
-     * @param xianyuAccountId 闲鱼账号ID
-     * @param xyGoodsId 闲鱼商品ID
+     * @param xianyuAccountId 某鱼账号ID
+     * @param xyGoodsId 某鱼商品ID
      * @return 操作结果
      */
     @PostMapping("/delete")

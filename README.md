@@ -1,4 +1,4 @@
-# 闲鱼自动化助手
+# 某鱼自动化助手
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen.svg)
 ![Vue](https://img.shields.io/badge/Vue-3.5-green.svg)
 
-一个简洁高效的闲鱼店铺自动化管理工具
+一个简洁高效的某鱼店铺自动化管理工具
 
 [快速开始](#-快速开始) · [功能特性](#-功能特性) · [部署方式](#-部署方式) · [常见问题](#-常见问题)
 
@@ -17,7 +17,7 @@
 
 ## ✨ 功能特性
 
-- 🔐 **多账号管理** - 支持同时管理多个闲鱼账号
+- 🔐 **多账号管理** - 支持同时管理多个某鱼账号
 - 🚀 **自动发货** - 买家付款后自动发送发货内容
 - 💬 **自动回复** - 关键词匹配，智能回复买家消息
 - 🔗 **实时消息** - WebSocket 连接，即时接收消息
@@ -41,7 +41,7 @@ java -jar xianyu-assistant.jar
 
 ### 使用流程
 
-1. **添加账号** → 扫码登录闲鱼账号
+1. **添加账号** → 扫码登录某鱼账号
 2. **启动连接** → 建立 WebSocket 连接
 3. **同步商品** → 刷新商品列表
 4. **配置自动化** → 开启自动发货/回复
@@ -130,7 +130,7 @@ cd vue-code && npm install && npm run build && cd ..
 2. 访问 https://www.goofish.com/im 完成滑块验证
 3. 手动更新 Cookie 和 Token
 
-> 📖 **深入了解**: 查看 [闲鱼WebSocket消息处理完整流程](docs/闲鱼WebSocket消息处理完整流程.md) 了解 WebSocket 连接、消息处理和自动发货的完整技术细节。
+> 📖 **深入了解**: 查看 [某鱼WebSocket消息处理完整流程](docs/某鱼WebSocket消息处理完整流程.md) 了解 WebSocket 连接、消息处理和自动发货的完整技术细节。
 
 </details>
 
@@ -159,7 +159,7 @@ cd vue-code && npm install && npm run build && cd ..
 | 文档 | 描述 |
 |:---|:---|
 | [Docker部署详细指南](docs/Docker部署详细指南.md) | Docker 完整部署流程、配置说明、故障排查和生产环境建议 |
-| [闲鱼WebSocket消息处理完整流程](docs/闲鱼WebSocket消息处理完整流程.md) | WebSocket 连接建立、消息解析、事件驱动和自动发货的技术实现 |
+| [某鱼WebSocket消息处理完整流程](docs/某鱼WebSocket消息处理完整流程.md) | WebSocket 连接建立、消息解析、事件驱动和自动发货的技术实现 |
 
 ## 🤝 致谢
 

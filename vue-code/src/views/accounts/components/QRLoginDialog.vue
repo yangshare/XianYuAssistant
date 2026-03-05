@@ -53,7 +53,7 @@ const startPolling = () => {
       if (response.code === 0 || response.code === 200) {
         const data = response.data
         status.value = data?.status || 'pending'
-        
+
         switch (data?.status) {
           case 'pending':
             statusText.value = '等待扫码...'
@@ -93,15 +93,15 @@ const handleLoginSuccess = async () => {
       const cookieText = Object.entries(cookies)
         .map(([key, value]) => `${key}=${value}`)
         .join('; ')
-      
+
       const accountNote = `账号_${unb || Date.now()}`
-      
+
       const addRes = await addAccount({
         accountNote,
         unb,
         cookieText
       } as any)
-      
+
       if (addRes.code === 0 || addRes.code === 200) {
         showSuccess('账号添加成功')
         handleClose()
@@ -124,7 +124,7 @@ const handleClose = () => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    title="扫码添加闲鱼账号"
+    title="扫码添加某鱼账号"
     width="400px"
     @close="handleClose"
   >
@@ -133,18 +133,18 @@ const handleClose = () => {
         <img v-if="qrCodeUrl" :src="qrCodeUrl" alt="二维码" class="qr-code" />
         <el-skeleton v-else animated />
       </div>
-      
-      <p class="qr-tip">请使用闲鱼APP扫描二维码登录</p>
-      
+
+      <p class="qr-tip">请使用某鱼APP扫描二维码登录</p>
+
       <div class="qr-status">
         <el-tag :type="status === 'confirmed' ? 'success' : 'info'">
           {{ statusText }}
         </el-tag>
       </div>
-      
+
       <p v-if="sessionId" class="session-id">会话ID: {{ sessionId }}</p>
     </div>
-    
+
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
     </template>

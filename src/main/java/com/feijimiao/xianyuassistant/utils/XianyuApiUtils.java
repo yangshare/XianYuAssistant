@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 闲鱼API工具类
- * 封装闲鱼API调用的通用逻辑
+ * 某鱼API工具类
+ * 封装某鱼API调用的通用逻辑
  */
 @Slf4j
 public class XianyuApiUtils {
@@ -16,7 +16,7 @@ public class XianyuApiUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     /**
-     * 闲鱼API基础URL
+     * 某鱼API基础URL
      */
     private static final String BASE_URL = "https://h5api.m.goofish.com/h5/";
     
@@ -26,7 +26,7 @@ public class XianyuApiUtils {
     private static final String APP_KEY = "34839810";
     
     /**
-     * 构建标准的闲鱼API请求头
+     * 构建标准的某鱼API请求头
      *
      * @param cookiesStr Cookie字符串
      * @return 请求头Map
@@ -91,7 +91,7 @@ public class XianyuApiUtils {
     }
     
     /**
-     * 调用闲鱼API（POST方法）
+     * 调用某鱼API（POST方法）
      *
      * @param apiName API名称
      * @param dataMap 数据Map
@@ -140,17 +140,17 @@ public class XianyuApiUtils {
             body.put("data", dataJson);
             
             // 10. 发送请求
-            log.info("调用闲鱼API: {}", apiName);
+            log.info("调用某鱼API: {}", apiName);
             return HttpClientUtils.post(url, headers, body);
             
         } catch (Exception e) {
-            log.error("调用闲鱼API失败: apiName={}", apiName, e);
+            log.error("调用某鱼API失败: apiName={}", apiName, e);
             return null;
         }
     }
     
     /**
-     * 调用闲鱼API（POST方法，不带SPM参数）
+     * 调用某鱼API（POST方法，不带SPM参数）
      *
      * @param apiName API名称
      * @param dataMap 数据Map

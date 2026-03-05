@@ -27,10 +27,10 @@ loadAccounts();
 <template>
   <div class="accounts-page">
     <div class="page-header">
-      <h1 class="page-title">闲鱼账号</h1>
+      <h1 class="page-title">某鱼账号</h1>
       <div class="header-actions">
         <el-button type="primary" @click="showQRLoginDialog">
-          📱 扫码添加闲鱼账号
+          📱 扫码添加某鱼账号
         </el-button>
         <el-button @click="showManualAddDialog">
           + 手动添加
@@ -41,10 +41,10 @@ loadAccounts();
     <el-card class="account-card">
       <template #header>
         <div class="card-header">
-          <span class="card-title">闲鱼账号列表</span>
-          <el-button 
-            type="primary" 
-            link 
+          <span class="card-title">某鱼账号列表</span>
+          <el-button
+            type="primary"
+            link
             @click="loadAccounts"
             :loading="loading"
           >
@@ -52,7 +52,7 @@ loadAccounts();
           </el-button>
         </div>
       </template>
-      
+
       <AccountTable
         :accounts="accounts"
         :loading="loading"
@@ -62,17 +62,17 @@ loadAccounts();
     </el-card>
 
     <!-- 对话框组件 -->
-    <AddAccountDialog 
-      v-model="dialogs.add" 
+    <AddAccountDialog
+      v-model="dialogs.add"
       :account="currentAccount"
-      @success="loadAccounts" 
+      @success="loadAccounts"
     />
     <ManualAddDialog v-model="dialogs.manualAdd" @success="loadAccounts" />
     <QRLoginDialog v-model="dialogs.qrLogin" @success="loadAccounts" />
-    <DeleteConfirmDialog 
-      v-model="dialogs.deleteConfirm" 
+    <DeleteConfirmDialog
+      v-model="dialogs.deleteConfirm"
       :account-id="deleteAccountId"
-      @success="loadAccounts" 
+      @success="loadAccounts"
     />
   </div>
 </template>

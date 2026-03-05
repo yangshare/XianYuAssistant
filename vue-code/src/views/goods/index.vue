@@ -126,15 +126,15 @@ const handleDelete = async (xyGoodId: string, title: string) => {
     showInfo('请先选择账号');
     return;
   }
-  
+
   try {
     await showConfirm(`确定要删除商品 "${title}" 吗？此操作不可恢复。`, '删除确认');
-    
+
     const response = await deleteItem({
       xianyuAccountId: selectedAccountId.value,
       xyGoodsId: xyGoodId
     });
-    
+
     if (response.code === 0 || response.code === 200) {
       showSuccess('商品删除成功');
       // 重新加载商品列表
@@ -247,7 +247,7 @@ onMounted(() => {
             :value="account.id"
           />
         </el-select>
-        
+
         <el-select
           v-model="statusFilter"
           placeholder="全部状态"
@@ -259,10 +259,10 @@ onMounted(() => {
           <el-option label="已下架" value="1" />
           <el-option label="已售出" value="2" />
         </el-select>
-        
+
         <el-button @click="loadGoods">刷新列表</el-button>
         <el-button type="primary" :loading="refreshing" @click="handleRefresh">
-          同步闲鱼商品
+          同步某鱼商品
         </el-button>
       </div>
     </div>
@@ -283,13 +283,13 @@ onMounted(() => {
         size="small"
       >
         <el-table-column type="index" label="序号" width="60" align="center" />
-        
+
         <el-table-column prop="item.xyGoodId" label="商品ID" width="140">
           <template #default="{ row }">
             <div class="goods-id">{{ row.item.xyGoodId }}</div>
           </template>
         </el-table-column>
-        
+
         <el-table-column label="商品图片" width="80" align="center">
           <template #default="{ row }">
             <el-image
@@ -300,15 +300,15 @@ onMounted(() => {
             />
           </template>
         </el-table-column>
-        
+
         <el-table-column prop="item.title" label="商品标题" min-width="200" show-overflow-tooltip />
-        
+
         <el-table-column label="价格" width="100" align="right">
           <template #default="{ row }">
             <span class="goods-price">{{ formatPrice(row.item.soldPrice) }}</span>
           </template>
         </el-table-column>
-        
+
         <el-table-column label="状态" width="80">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.item.status)" size="small">
@@ -316,7 +316,7 @@ onMounted(() => {
             </el-tag>
           </template>
         </el-table-column>
-        
+
         <el-table-column label="自动发货" width="80" align="center">
           <template #default="{ row }">
             <el-switch
@@ -326,7 +326,7 @@ onMounted(() => {
             />
           </template>
         </el-table-column>
-        
+
         <el-table-column label="自动回复" width="80" align="center">
           <template #default="{ row }">
             <el-switch
@@ -336,7 +336,7 @@ onMounted(() => {
             />
           </template>
         </el-table-column>
-        
+
         <el-table-column label="操作" width="150" align="center" fixed="right">
           <template #default="{ row }">
             <el-button

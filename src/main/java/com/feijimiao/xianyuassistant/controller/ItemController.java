@@ -24,7 +24,7 @@ public class ItemController {
 
     /**
      * 刷新商品数据
-     * 从闲鱼API获取最新商品信息并更新到数据库
+     * 从某鱼API获取最新商品信息并更新到数据库
      *
      * @param reqDTO 请求参数
      * @return 更新成功的商品ID列表

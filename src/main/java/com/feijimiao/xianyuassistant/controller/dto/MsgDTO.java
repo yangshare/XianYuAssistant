@@ -29,7 +29,7 @@ public class MsgDTO {
     private String msgContent;
     
     /**
-     * 闲鱼商品ID
+     * 某鱼商品ID
      */
     private String xyGoodsId;
     

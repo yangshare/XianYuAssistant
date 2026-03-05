@@ -35,7 +35,7 @@ const handleSubmit = async () => {
     showError('请输入账号备注');
     return;
   }
-  
+
   if (!formData.value.cookieText.trim()) {
     showError('请输入 Cookie');
     return;
@@ -59,7 +59,7 @@ const handleSubmit = async () => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    title="手动添加闲鱼账号"
+    title="手动添加某鱼账号"
     width="600px"
     @close="handleClose"
   >
@@ -67,7 +67,7 @@ const handleSubmit = async () => {
       <el-form-item label="账号备注">
         <el-input v-model="formData.accountNote" placeholder="请输入账号备注" />
       </el-form-item>
-      
+
       <el-form-item label="Cookie">
         <el-input
           v-model="formData.cookieText"
@@ -77,7 +77,7 @@ const handleSubmit = async () => {
         />
       </el-form-item>
     </el-form>
-    
+
     <template #footer>
       <el-button @click="handleClose">取消</el-button>
       <el-button type="primary" @click="handleSubmit">添加账号</el-button>

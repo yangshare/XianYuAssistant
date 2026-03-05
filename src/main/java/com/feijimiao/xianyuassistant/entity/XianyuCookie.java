@@ -8,7 +8,7 @@ import lombok.Data;
 
 
 /**
- * 闲鱼Cookie实体类
+ * 某鱼Cookie实体类
  */
 @Data
 @TableName("xianyu_cookie")
@@ -21,7 +21,7 @@ public class XianyuCookie {
     private Long id;
     
     /**
-     * 关联的闲鱼账号ID
+     * 关联的某鱼账号ID
      */
     private Long xianyuAccountId;
     

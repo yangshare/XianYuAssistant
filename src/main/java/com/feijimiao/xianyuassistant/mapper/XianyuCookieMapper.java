@@ -5,7 +5,7 @@ import com.feijimiao.xianyuassistant.entity.XianyuCookie;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 闲鱼Cookie Mapper
+ * 某鱼Cookie Mapper
  */
 @Mapper
 public interface XianyuCookieMapper extends BaseMapper<XianyuCookie> {

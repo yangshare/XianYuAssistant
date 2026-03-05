@@ -1,75 +1,121 @@
-# 数据库结构说明
+# 数据库脚本说明
 
-## 文件说明
+## 目录结构
 
-### schema.sql
-完整的数据库表结构定义文件，包含所有表的最新结构。
-
-**重要表结构：**
-
-#### 1. xianyu_goods_auto_delivery_config（自动发货配置表）
-```sql
-- id: 主键ID
-- xianyu_account_id: 闲鱼账号ID
-- xianyu_goods_id: 本地闲鱼商品ID
-- xy_goods_id: 闲鱼的商品ID
-- type: 发货类型（1-文本，2-自定义）
-- auto_delivery_content: 自动发货的文本内容
-- auto_confirm_shipment: 自动确认发货开关（0-关闭，1-开启）✨新增
-- create_time: 创建时间
-- update_time: 更新时间
+```
+sql/
+├── README.md                           # 本文件
+├── V1.0.0__init_schema.sql             # 初始化脚本（基础表结构）
+├── V1.1.0__add_order_fields.sql        # 升级：添加订单字段
+├── V1.2.0__add_auto_confirm_shipment.sql  # 升级：添加自动确认发货开关
+└── V1.3.0__add_operation_log.sql       # 升级：添加操作日志表
 ```
 
-#### 2. xianyu_goods_auto_delivery_record（自动发货记录表）
-```sql
-- id: 主键ID
-- xianyu_account_id: 闲鱼账号ID
-- xianyu_goods_id: 本地闲鱼商品ID
-- xy_goods_id: 闲鱼的商品ID
-- pnm_id: 消息pnmid（防重复）
-- buyer_user_id: 买家用户ID
-- buyer_user_name: 买家用户名称
-- content: 发货消息内容
-- state: 自动发货状态（1-成功，0-失败）
-- order_id: 订单ID ✨新增
-- order_state: 确认发货状态（0-未确认发货，1-已确认发货）✨新增
-- create_time: 创建时间
+## 使用方式
+
+### 方式一：新项目初始化
+```bash
+# 按版本号顺序执行所有脚本
+sqlite3 database.db < V1.0.0__init_schema.sql
+sqlite3 database.db < V1.1.0__add_order_fields.sql
+sqlite3 database.db < V1.2.0__add_auto_confirm_shipment.sql
+sqlite3 database.db < V1.3.0__add_operation_log.sql
 ```
 
-### 升级脚本
+### 方式二：应用自动执行（推荐）
+在应用启动时，检查 `schema_version` 表，自动执行未执行的升级脚本：
 
-#### upgrade_add_order_fields_to_delivery_record.sql
-为自动发货记录表添加订单相关字段：
-- `order_id`: 订单ID
-- `order_state`: 确认发货状态
+```java
+// 伪代码示例
+public void checkAndUpgrade() {
+    List<String> scripts = List.of(
+        "V1.0.0", "V1.1.0", "V1.2.0", "V1.3.0"
+    );
+    for (String version : scripts) {
+        if (!isVersionExecuted(version)) {
+            executeScript(version);
+        }
+    }
+}
+```
 
-**执行时间：** 2025-01-15
+## 版本管理机制
 
-#### upgrade_add_auto_confirm_shipment.sql
-为自动发货配置表添加自动确认发货开关：
-- `auto_confirm_shipment`: 自动确认发货开关（0-关闭，1-开启）
+### schema_version 表
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | INTEGER | 主键 |
+| version | VARCHAR(50) | 版本号，如 1.0.0 |
+| description | VARCHAR(200) | 版本描述 |
+| script_name | VARCHAR(100) | 脚本文件名 |
+| execute_time | DATETIME | 执行时间 |
 
-**执行时间：** 2025-12-23
+### 升级脚本规范
 
-## 使用说明
+1. **命名规范**: `V{大版本}.{小版本}.{补丁}__{描述}.sql`
+   - 例: `V1.1.0__add_order_fields.sql`
 
-### 新数据库初始化
-直接执行 `schema.sql` 即可创建完整的数据库结构。
+2. **幂等性**: 每个升级脚本必须包含版本检查
+   ```sql
+   INSERT INTO schema_version (version, description, script_name)
+   SELECT '1.1.0', '描述', '文件名'
+   WHERE NOT EXISTS (SELECT 1 FROM schema_version WHERE version = '1.1.0');
+   ```
 
-### 现有数据库升级
-按照升级脚本的执行时间顺序依次执行：
-1. `upgrade_add_order_fields_to_delivery_record.sql`
-2. `upgrade_add_auto_confirm_shipment.sql`
+3. **索引创建**: 使用 `IF NOT EXISTS` 确保可重复执行
+   ```sql
+   CREATE INDEX IF NOT EXISTS idx_name ON table(column);
+   ```
 
-## 功能说明
+## 表结构概览
 
-### 自动确认发货功能
-当 `auto_confirm_shipment = 1` 时：
-1. 买家下单触发自动发货
-2. 自动发货成功后，系统自动调用确认收货接口
-3. 确认收货成功后，更新 `order_state = 1`
+| 表名 | 说明 |
+|------|------|
+| schema_version | 版本管理表 |
+| xianyu_account | 某鱼账号表 |
+| xianyu_cookie | 某鱼Cookie表 |
+| xianyu_goods | 某鱼商品信息表 |
+| xianyu_chat_message | 某鱼聊天消息表 |
+| xianyu_goods_config | 商品配置表 |
+| xianyu_goods_auto_delivery_config | 商品自动发货配置表 |
+| xianyu_goods_auto_delivery_record | 商品自动发货记录表 |
+| xianyu_goods_auto_reply_config | 商品自动回复配置表 |
+| xianyu_goods_auto_reply_record | 商品自动回复记录表 |
+| xianyu_operation_log | 操作日志表 |
 
-### 字段关系
-- `state`: 记录自动发货是否成功
-- `order_state`: 记录是否已确认发货
-- `order_id`: 关联订单ID，用于确认收货操作
+## 新增升级脚本步骤
+
+1. 创建新文件：`V{下一版本号}__{描述}.sql`
+2. 添加版本记录（幂等方式）
+3. 编写 DDL 语句（确保幂等）
+4. 更新本 README 的目录结构
+
+```sql
+-- 模板
+-- ============================================================
+-- 升级脚本: {描述}
+-- 版本: V{版本号}
+-- 日期: {日期}
+-- ============================================================
+
+INSERT INTO schema_version (version, description, script_name)
+SELECT '{版本号}', '{描述}', '{文件名}'
+WHERE NOT EXISTS (SELECT 1 FROM schema_version WHERE version = '{版本号}');
+
+-- 你的 DDL 语句
+```
+
+## 注意事项
+
+1. **SQLite 限制**
+   - 不支持 `COMMENT ON` 语法，注释写在脚本中
+   - `ALTER TABLE ADD COLUMN` 不支持 `IF NOT EXISTS`，需注意幂等
+   - 触发器分隔符统一使用 `$$`
+
+2. **升级顺序**
+   - 必须按版本号顺序执行
+   - 不可跳过中间版本
+
+3. **回滚**
+   - SQLite 不支持完整的 DDL 回滚
+   - 建议升级前备份数据库

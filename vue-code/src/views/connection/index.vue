@@ -60,7 +60,7 @@ const loadAccounts = async () => {
 const selectAccount = (accountId: number) => {
   selectedAccountId.value = accountId;
   loadConnectionStatus(accountId);
-  
+
   // 启动定时刷新
   if (statusInterval) {
     clearInterval(statusInterval);
@@ -100,7 +100,7 @@ const loadConnectionStatus = async (accountId: number, silent = false) => {
 // 启动连接
 const handleStartConnection = async () => {
   if (!selectedAccountId.value) return;
-  
+
   statusLoading.value = true;
   addLog('正在启动连接...');
   try {
@@ -112,13 +112,13 @@ const handleStartConnection = async () => {
     } else if (response.code === 1001 && response.data?.needCaptcha) {
       // 需要滑块验证
       addLog('⚠️ 检测到需要滑块验证', true);
-      
+
       // 显示验证对话框
       await ElMessageBox.confirm(
         `检测到账号需要完成滑块验证才能启动连接。\n\n` +
         `📋 操作步骤：\n\n` +
-        `1️⃣ 点击下方"访问闲鱼IM"按钮，打开闲鱼消息页面\n\n` +
-        `2️⃣ 在闲鱼页面完成滑块验证\n\n` +
+        `1️⃣ 点击下方"访问某鱼IM"按钮，打开某鱼消息页面\n\n` +
+        `2️⃣ 在某鱼页面完成滑块验证\n\n` +
         `3️⃣ 验证成功后，点击本页面 Cookie 和 Token 区域的"❓ 如何获取？"按钮\n\n` +
         `4️⃣ 按照帮助教程获取 Cookie 和 Token\n\n` +
         `5️⃣ 点击"✏️ 手动更新"按钮，粘贴 Cookie 和 Token\n\n` +
@@ -126,19 +126,19 @@ const handleStartConnection = async () => {
         `💡 提示：帮助按钮中有详细的图文教程，非常简单！`,
         '🔐 需要滑块验证',
         {
-          confirmButtonText: '🌐 访问闲鱼IM',
+          confirmButtonText: '🌐 访问某鱼IM',
           cancelButtonText: '取消',
           type: 'warning',
           distinguishCancelAndClose: true,
           customClass: 'captcha-guide-dialog'
         }
       );
-      
-      // 打开闲鱼IM页面
+
+      // 打开某鱼IM页面
       window.open('https://www.goofish.com/im', '_blank');
-      addLog('✅ 已打开闲鱼IM页面');
+      addLog('✅ 已打开某鱼IM页面');
       addLog('📌 完成验证后，请点击"❓ 如何获取？"按钮查看教程');
-      showInfo('请在闲鱼IM页面完成验证，然后使用帮助按钮获取Cookie和Token');
+      showInfo('请在某鱼IM页面完成验证，然后使用帮助按钮获取Cookie和Token');
     } else {
       throw new Error(response.msg || '启动连接失败');
     }
@@ -155,7 +155,7 @@ const handleStartConnection = async () => {
 // 停止连接
 const handleStopConnection = async () => {
   if (!selectedAccountId.value) return;
-  
+
   // 显示确认对话框
   try {
     await ElMessageBox.confirm(
@@ -171,7 +171,7 @@ const handleStopConnection = async () => {
     // 用户取消操作
     return;
   }
-  
+
   statusLoading.value = true;
   addLog('正在断开连接...');
   try {
@@ -194,7 +194,7 @@ const handleStopConnection = async () => {
 // 清除验证等待状态
 const handleClearCaptchaWait = async () => {
   if (!selectedAccountId.value) return;
-  
+
   statusLoading.value = true;
   addLog('正在清除验证等待状态...');
   try {
@@ -227,7 +227,7 @@ const addLog = (message: string, isError = false) => {
   const now = new Date();
   const time = now.toLocaleTimeString();
   logs.value.push({ time, message, isError });
-  
+
   // 限制日志数量
   if (logs.value.length > 50) {
     logs.value.shift();
@@ -317,7 +317,7 @@ const showCookieHelp = () => {
       <div style="text-align: left;">
         <p style="margin-bottom: 12px;">请按照以下步骤获取Cookie：</p>
         <ol style="margin-left: 20px; line-height: 1.8;">
-          <li>打开浏览器，访问闲鱼网站并登录</li>
+          <li>打开浏览器，访问某鱼网站并登录</li>
           <li>按F12打开开发者工具</li>
           <li>切换到"网络"(Network)标签</li>
           <li>刷新页面</li>
@@ -326,10 +326,10 @@ const showCookieHelp = () => {
           <li>复制完整的Cookie值</li>
         </ol>
         <div style="margin-top: 16px; text-align: center;">
-          <img 
-            src="/cookieGet.png" 
+          <img
+            src="/cookieGet.png"
             class="cookie-help-image"
-            alt="Cookie获取示例" 
+            alt="Cookie获取示例"
             onerror="this.style.display='none'"
             onclick="window.open('/cookieGet.png', '_blank')"
             title="点击查看大图"
@@ -357,7 +357,7 @@ const showTokenHelp = () => {
       <div style="text-align: left;">
         <p style="margin-bottom: 12px;">请按照以下步骤获取WebSocket Token：</p>
         <ol style="margin-left: 20px; line-height: 1.8;">
-          <li>打开浏览器，访问 <a href="https://www.goofish.com/im" target="_blank" style="color: #409eff;">闲鱼IM页面</a> 并登录</li>
+          <li>打开浏览器，访问 <a href="https://www.goofish.com/im" target="_blank" style="color: #409eff;">某鱼IM页面</a> 并登录</li>
           <li>按F12打开开发者工具</li>
           <li>切换到"网络"(Network)标签</li>
           <li>在页面中进行任意操作（如点击聊天）</li>
@@ -366,10 +366,10 @@ const showTokenHelp = () => {
           <li>复制完整的Token值</li>
         </ol>
         <div style="margin-top: 16px; text-align: center;">
-          <img 
-            src="/tokenGet.png" 
+          <img
+            src="/tokenGet.png"
             class="token-help-image"
-            alt="Token获取示例" 
+            alt="Token获取示例"
             onerror="this.style.display='none'"
             onclick="window.open('/tokenGet.png', '_blank')"
             title="点击查看大图"
@@ -431,10 +431,10 @@ onUnmounted(() => {
       <el-card class="account-panel">
         <template #header>
           <div class="panel-header">
-            <span class="panel-title">闲鱼账号</span>
+            <span class="panel-title">某鱼账号</span>
           </div>
         </template>
-        
+
         <div v-loading="loading" class="account-list">
           <div
             v-for="account in accounts"
@@ -449,7 +449,7 @@ onUnmounted(() => {
               <div class="account-id">ID: {{ account.id }}</div>
             </div>
           </div>
-          
+
           <el-empty
             v-if="!loading && accounts.length === 0"
             description="暂无账号数据"
@@ -472,7 +472,7 @@ onUnmounted(() => {
             />
           </div>
         </template>
-        
+
         <div v-if="!selectedAccountId" class="empty-state">
           <el-empty description="请选择一个账号查看连接状态" :image-size="100">
             <template #image>
@@ -494,7 +494,7 @@ onUnmounted(() => {
                   <h2 class="main-title">连接状态</h2>
                   <p class="main-subtitle">账号 ID: {{ connectionStatus.xianyuAccountId }} · {{ connectionStatus.status }}</p>
                   <p class="main-note" :class="connectionStatus.connected ? 'note-success' : 'note-danger'">
-                    {{ connectionStatus.connected ? '已连接到闲鱼服务器' : '当前未连接到闲鱼服务器，无法监听消息以及执行自动化流程' }}
+                    {{ connectionStatus.connected ? '已连接到某鱼服务器' : '当前未连接到某鱼服务器，无法监听消息以及执行自动化流程' }}
                   </p>
                 </div>
               </div>
@@ -521,8 +521,8 @@ onUnmounted(() => {
                     <h3 class="section-title">Cookie 凭证</h3>
                     <p class="section-note">用于识别账号，如果过期无法使用任何功能</p>
                   </div>
-                  <el-tag 
-                    :type="getCookieStatusType(connectionStatus.cookieStatus)" 
+                  <el-tag
+                    :type="getCookieStatusType(connectionStatus.cookieStatus)"
                     size="small"
                     round
                   >
@@ -567,8 +567,8 @@ onUnmounted(() => {
                     <h3 class="section-title">WebSocket Token</h3>
                     <p class="section-note">这个是收取消息的凭证，如果异常，可能是账号被锁人机验证，需要隔段时间再试一试</p>
                   </div>
-                  <el-tag 
-                    :type="getTokenStatusType(connectionStatus.tokenExpireTime)" 
+                  <el-tag
+                    :type="getTokenStatusType(connectionStatus.tokenExpireTime)"
                     size="small"
                     round
                   >
@@ -1169,11 +1169,11 @@ onUnmounted(() => {
   .details-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dependency-flow {
     flex-wrap: wrap;
   }
-  
+
   .flow-arrow {
     display: none;
   }
@@ -1183,35 +1183,35 @@ onUnmounted(() => {
   .connection-container {
     flex-direction: column;
   }
-  
+
   .account-panel {
     max-width: none;
   }
-  
+
   .account-panel,
   .status-panel {
     min-width: auto;
   }
-  
+
   .main-card-header {
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
   }
-  
+
   .header-right {
     width: 100%;
     justify-content: flex-end;
   }
-  
+
   .dependency-flow {
     padding: 20px;
   }
-  
+
   .flow-content {
     padding: 12px 16px;
   }
-  
+
   .details-grid {
     padding: 20px;
   }

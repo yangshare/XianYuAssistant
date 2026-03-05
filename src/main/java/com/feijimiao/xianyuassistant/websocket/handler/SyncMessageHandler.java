@@ -83,7 +83,7 @@ public class SyncMessageHandler extends AbstractLwpHandler {
         // 获取lwp字段
         String lwp = getString(messageData, "lwp");
         
-        log.info("【账号{}】收到闲鱼原始消息: lwp={}, messageCount={}", accountId, lwp, syncParams.getMessageCount());
+        log.info("【账号{}】收到某鱼原始消息: lwp={}, messageCount={}", accountId, lwp, syncParams.getMessageCount());
         
         // 处理每条加密消息
         for (int i = 0; i < syncParams.getDataList().size(); i++) {

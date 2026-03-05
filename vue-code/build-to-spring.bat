@@ -1,40 +1,41 @@
 @echo off
+chcp 65001 >nul 2>&1
 echo ========================================
-echo 正在构建 Vue 项目并部署到 Spring Boot...
+echo Building Vue project for Spring Boot...
 echo ========================================
 
 echo.
-echo [1/3] 清理旧的构建文件...
+echo [1/3] Cleaning old build files...
 if exist "..\src\main\resources\static" (
     rmdir /s /q "..\src\main\resources\static"
-    echo 已清理旧文件
+    echo Done.
 )
 
 echo.
-echo [2/3] 构建 Vue 项目...
-call pnpm run build
+echo [2/3] Building Vue project...
+call pnpm exec vite build
 
 if %errorlevel% neq 0 (
     echo.
-    echo ❌ 构建失败！
+    echo Build failed!
     pause
     exit /b %errorlevel%
 )
 
 echo.
-echo [3/3] 验证构建结果...
+echo [3/3] Verifying build output...
 if exist "..\src\main\resources\static\index.html" (
-    echo ✅ 构建成功！
+    echo Build succeeded!
     echo.
-    echo 文件已部署到: src/main/resources/static/
+    echo Output: src/main/resources/static/
     echo.
-    echo 现在可以启动 Spring Boot 应用，访问 http://localhost:8080
+    echo Start Spring Boot and visit http://localhost:8080
 ) else (
-    echo ❌ 构建文件未找到！
+    echo Build output not found!
 )
 
 echo.
 echo ========================================
-echo 构建完成
+echo Done
 echo ========================================
 pause

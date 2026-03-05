@@ -7,7 +7,7 @@
 -- 1. 某鱼账号表
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS xianyu_account (
-    id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id          BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     account_note VARCHAR(100),
     unb         VARCHAR(100),
     status      TINYINT      DEFAULT 1,

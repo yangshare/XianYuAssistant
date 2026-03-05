@@ -39,5 +39,9 @@ build/
 *.db-journal
 /logs/
 
+### Vue / Node ###
+vue-code/node_modules/
+vue-code/.pnpm-store/
+
 ### claude code ###
 /.claude/

@@ -7,7 +7,7 @@
 -- 操作记录表
 CREATE TABLE IF NOT EXISTS xianyu_operation_log (
     id               INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    xianyu_account_id INT         NOT NULL,                    -- 账号ID
+    xianyu_account_id BIGINT      NOT NULL,                    -- 账号ID
     operation_type   VARCHAR(50)  NOT NULL,                    -- 操作类型
     operation_module VARCHAR(50),                              -- 操作模块
     operation_desc   VARCHAR(500),                             -- 操作描述

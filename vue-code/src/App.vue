@@ -18,12 +18,24 @@ import { RouterView } from 'vue-router'
           <el-menu-item index="/dashboard">
             <span>📊 仪表板</span>
           </el-menu-item>
+
+          <div class="menu-group-title">
+            <span class="group-icon">-</span>
+            <span class="group-text">账号管理</span>
+          </div>
+
           <el-menu-item index="/accounts">
             <span>👤 某鱼账号</span>
           </el-menu-item>
           <el-menu-item index="/connection">
             <span>🔗 连接管理</span>
           </el-menu-item>
+
+          <div class="menu-group-title">
+            <span class="group-icon">-</span>
+            <span class="group-text">业务管理</span>
+          </div>
+
           <el-menu-item index="/goods">
             <span>📦 商品管理</span>
           </el-menu-item>
@@ -34,7 +46,10 @@ import { RouterView } from 'vue-router'
             <span>💬 消息管理</span>
           </el-menu-item>
 
-          <el-divider content-position="left">自动化</el-divider>
+          <div class="menu-group-title">
+            <span class="group-icon">-</span>
+            <span class="group-text">自动化</span>
+          </div>
 
           <el-menu-item index="/auto-delivery">
             <span>🤖 自动发货</span>
@@ -42,12 +57,15 @@ import { RouterView } from 'vue-router'
           <el-menu-item index="/auto-reply">
             <span>💭 自动回复</span>
           </el-menu-item>
+
+          <div class="menu-group-title">
+            <span class="group-icon">-</span>
+            <span class="group-text">日志记录</span>
+          </div>
+
           <el-menu-item index="/records">
             <span>📝 操作记录</span>
           </el-menu-item>
-
-          <el-divider content-position="left">系统</el-divider>
-
           <el-menu-item index="/operation-log">
             <span>📜 操作日志</span>
           </el-menu-item>
@@ -135,16 +153,31 @@ import { RouterView } from 'vue-router'
   background: #e8e8e8;
 }
 
-:deep(.el-divider__text) {
-  font-size: 12px;
-  color: #999999;
-  text-transform: uppercase;
-  font-weight: 600;
+.menu-group-title {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px 6px;
+  margin-top: 24px;
+  gap: 6px;
+  pointer-events: none;
+  user-select: none;
 }
 
-:deep(.el-divider) {
-  margin: 24px 0 8px;
-  border-color: transparent;
+.menu-group-title:first-child {
+  margin-top: 12px;
+}
+
+.group-icon {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.group-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #aaaaaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* 响应式适配 */

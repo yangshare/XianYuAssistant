@@ -94,4 +94,10 @@ public interface XianyuGoodsAutoDeliveryRecordMapper {
      */
     @Update("UPDATE xianyu_goods_auto_delivery_record SET order_state = #{orderState} WHERE xianyu_account_id = #{accountId} AND order_id = #{orderId}")
     int updateOrderState(@Param("accountId") Long accountId, @Param("orderId") String orderId, @Param("orderState") Integer orderState);
+
+    /**
+     * 根据账号ID和pnmId查询记录
+     */
+    @Select("SELECT * FROM xianyu_goods_auto_delivery_record WHERE xianyu_account_id = #{accountId} AND pnm_id = #{pnmId} LIMIT 1")
+    XianyuGoodsAutoDeliveryRecord selectByAccountIdAndPnmId(@Param("accountId") Long accountId, @Param("pnmId") String pnmId);
 }

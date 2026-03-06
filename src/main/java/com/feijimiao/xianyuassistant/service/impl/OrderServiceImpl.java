@@ -68,6 +68,16 @@ public class OrderServiceImpl implements OrderService {
             // 解析Cookie
             Map<String, String> cookies = XianyuSignUtils.parseCookies(cookieStr);
 
+            // 诊断日志：输出Cookie中的关键字段
+            log.info("【账号{}】Cookie诊断 - _m_h5_tk: {}", accountId,
+                    cookies.getOrDefault("_m_h5_tk", "缺失"));
+            log.info("【账号{}】Cookie诊断 - _m_h5_tk_enc: {}", accountId,
+                    cookies.getOrDefault("_m_h5_tk_enc", "缺失"));
+            log.info("【账号{}】Cookie诊断 - cookie2: {}", accountId,
+                    cookies.getOrDefault("cookie2", "缺失"));
+            log.info("【账号{}】Cookie诊断 - t: {}", accountId,
+                    cookies.getOrDefault("t", "缺失"));
+
             // 提取token
             String token = XianyuSignUtils.extractToken(cookies);
             if (token.isEmpty()) {
@@ -91,8 +101,10 @@ public class OrderServiceImpl implements OrderService {
             // 生成签名
             String sign = XianyuSignUtils.generateSign(timestamp, token, dataVal);
 
-            log.info("【账号{}】签名生成: timestamp={}, token={}, sign={}", 
+            log.info("【账号{}】签名生成: timestamp={}, token={}, sign={}",
                     accountId, timestamp, token.substring(0, Math.min(10, token.length())) + "...", sign);
+            log.info("【账号{}】签名原文: token={}&timestamp={}&appKey=34839810&data={}",
+                    accountId, token, timestamp, dataVal);
 
             // 构造URL参数
             Map<String, String> params = new HashMap<>();
@@ -145,6 +157,17 @@ public class OrderServiceImpl implements OrderService {
             log.info("【账号{}】响应状态码: {}", accountId, response.statusCode());
             log.info("【账号{}】响应内容: {}", accountId, response.body());
 
+            // 诊断日志：检查响应头中的 Set-Cookie
+            java.util.List<String> setCookies = response.headers().allValues("Set-Cookie");
+            if (!setCookies.isEmpty()) {
+                log.info("【账号{}】响应包含 Set-Cookie，数量: {}", accountId, setCookies.size());
+                for (String setCookie : setCookies) {
+                    log.info("【账号{}】Set-Cookie: {}", accountId, setCookie);
+                }
+            } else {
+                log.info("【账号{}】响应中没有 Set-Cookie", accountId);
+            }
+
             // 解析响应
             @SuppressWarnings("unchecked")
             Map<String, Object> result = objectMapper.readValue(response.body(), Map.class);
@@ -175,6 +198,7 @@ public class OrderServiceImpl implements OrderService {
                     // Token过期
                     if (retCode.contains("TOKEN_EXOIRED") || retCode.contains("TOKEN_EXPIRED")) {
                         log.warn("【账号{}】⚠️ Token已过期: orderId={}", accountId, orderId);
+                        log.warn("【账号{}】建议检查: 1.Cookie是否完整 2.是否需要重新扫码登录 3._m_h5_tk是否正确", accountId);
                         return null; // 返回null表示失败，前端会显示"确认发货失败"
                     }
                 }

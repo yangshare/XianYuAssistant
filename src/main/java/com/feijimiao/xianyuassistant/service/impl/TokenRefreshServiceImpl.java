@@ -13,9 +13,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -75,45 +77,79 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
             
             String cookieStr = cookie.getCookieText();
             Map<String, String> cookies = XianyuSignUtils.parseCookies(cookieStr);
-            
+
             // 2. 第一次请求：获取新的_m_h5_tk
+            // 构造请求参数（参考OrderServiceImpl的实现）
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            Map<String, String> params = new HashMap<>();
+            params.put("jsv", "2.7.2");
+            params.put("appKey", "34839810");
+            params.put("t", timestamp);
+            params.put("sign", ""); // 第一次请求不需要签名
+            params.put("v", "1.0");
+            params.put("type", "originaljson");
+            params.put("dataType", "json");
+            params.put("timeout", "20000");
+            params.put("api", "mtop.gaia.nodejs.gaia.idle.data.gw.v2.index.get");
+
+            // 构造完整URL
+            StringBuilder urlBuilder = new StringBuilder(API_H5_TK);
+            urlBuilder.append("?");
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                urlBuilder.append(entry.getKey())
+                        .append("=")
+                        .append(entry.getValue())
+                        .append("&");
+            }
+            String url = urlBuilder.substring(0, urlBuilder.length() - 1);
+
+            log.info("【账号{}】请求URL: {}", accountId, url);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_H5_TK))
+                    .uri(URI.create(url))
+                    .header("Cookie", cookieStr)
                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
                     .header("Referer", "https://market.m.goofish.com/")
                     .GET()
                     .timeout(Duration.ofSeconds(10))
                     .build();
-            
+
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            
+
+            log.info("【账号{}】响应状态码: {}", accountId, response.statusCode());
+            log.info("【账号{}】响应内容: {}", accountId, response.body());
+
             // 3. 提取新的_m_h5_tk
             List<String> setCookieHeaders = response.headers().allValues("Set-Cookie");
+            log.info("【账号{}】Set-Cookie响应头数量: {}", accountId, setCookieHeaders.size());
+            for (String setCookie : setCookieHeaders) {
+                log.info("【账号{}】Set-Cookie: {}", accountId, setCookie);
+            }
+
             boolean updated = false;
-            
+
             for (String setCookie : setCookieHeaders) {
                 String[] parts = setCookie.split(";")[0].split("=", 2);
                 if (parts.length == 2 && "_m_h5_tk".equals(parts[0])) {
                     String newMh5tk = parts[1];
                     cookies.put("_m_h5_tk", newMh5tk);
-                    
+
                     // 更新数据库
                     String newCookieStr = XianyuSignUtils.formatCookies(cookies);
                     cookie.setCookieText(newCookieStr);
                     cookie.setMH5Tk(newMh5tk);
                     cookieMapper.updateById(cookie);
-                    
-                    log.info("【账号{}】✅ _m_h5_tk token刷新成功: {}", accountId, 
+
+                    log.info("【账号{}】✅ _m_h5_tk token刷新成功: {}", accountId,
                             newMh5tk.substring(0, Math.min(20, newMh5tk.length())));
                     updated = true;
                     break;
                 }
             }
-            
+
             if (!updated) {
                 log.warn("【账号{}】⚠️ 响应中未包含新的_m_h5_tk", accountId);
             }
-            
+
             return updated;
             
         } catch (Exception e) {

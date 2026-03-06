@@ -294,19 +294,25 @@ public class SyncMessageHandler extends AbstractLwpHandler {
                 log.debug("📋 提取订单ID: 消息为空");
                 return null;
             }
-            
+
+            log.info("📋 提取订单ID调试: 完整消息JSON={}", completeMsg);
+
             @SuppressWarnings("unchecked")
             Map<String, Object> data = objectMapper.readValue(completeMsg, Map.class);
-            
+
             // 从 1.6.3.5 中提取订单ID
             // 路径: 1.6.3.5 (这是一个JSON字符串，需要再次解析)
             Object level1 = data.get("1");
+            log.info("📋 提取订单ID调试: level1存在={}, 类型={}", level1 != null, level1 != null ? level1.getClass().getSimpleName() : "null");
             if (level1 instanceof Map) {
                 Object level6 = ((Map<?, ?>) level1).get("6");
+                log.info("📋 提取订单ID调试: level6存在={}, 类型={}", level6 != null, level6 != null ? level6.getClass().getSimpleName() : "null");
                 if (level6 instanceof Map) {
                     Object level3 = ((Map<?, ?>) level6).get("3");
+                    log.info("📋 提取订单ID调试: level3存在={}, 类型={}", level3 != null, level3 != null ? level3.getClass().getSimpleName() : "null");
                     if (level3 instanceof Map) {
                         Object level5 = ((Map<?, ?>) level3).get("5");
+                        log.info("📋 提取订单ID调试: level5存在={}, 类型={}", level5 != null, level5 != null ? level5.getClass().getSimpleName() : "null");
                         if (level5 instanceof String) {
                             String jsonStr = (String) level5;
                             log.info("📋 提取订单ID: 找到字段1.6.3.5={}", jsonStr);
@@ -315,32 +321,67 @@ public class SyncMessageHandler extends AbstractLwpHandler {
                                 // 解析嵌套的JSON字符串
                                 @SuppressWarnings("unchecked")
                                 Map<String, Object> contentMap = objectMapper.readValue(jsonStr, Map.class);
-                                
-                                // 从 dynamicOperation.changeContent.dxCard.item.main.exContent.button.targetUrl 中提取
+
+                                // 尝试方案1: 从 dxCard.item.main.targetUrl 中提取（新格式）
+                                Object dxCard = contentMap.get("dxCard");
+                                log.info("📋 提取订单ID调试: dxCard存在={}", dxCard != null);
+                                if (dxCard instanceof Map) {
+                                    Object item = ((Map<?, ?>) dxCard).get("item");
+                                    log.info("📋 提取订单ID调试: item存在={}", item != null);
+                                    if (item instanceof Map) {
+                                        Object main = ((Map<?, ?>) item).get("main");
+                                        log.info("📋 提取订单ID调试: main存在={}", main != null);
+                                        if (main instanceof Map) {
+                                            String targetUrl = (String) ((Map<?, ?>) main).get("targetUrl");
+                                            log.info("📋 提取订单ID: 方案1找到targetUrl={}", targetUrl);
+
+                                            if (targetUrl != null && targetUrl.contains("id=")) {
+                                                // 提取 id 参数
+                                                String[] parts = targetUrl.split("[?&]");
+                                                for (String part : parts) {
+                                                    if (part.startsWith("id=")) {
+                                                        String orderId = part.substring(3);
+                                                        log.info("✅ 成功提取订单ID（方案1）: orderId={}", orderId);
+                                                        return orderId;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // 尝试方案2: 从 dynamicOperation.changeContent.dxCard.item.main.exContent.button.targetUrl 中提取（旧格式）
                                 Object dynamicOp = contentMap.get("dynamicOperation");
+                                log.info("📋 提取订单ID调试: dynamicOperation存在={}", dynamicOp != null);
                                 if (dynamicOp instanceof Map) {
                                     Object changeContent = ((Map<?, ?>) dynamicOp).get("changeContent");
+                                    log.info("📋 提取订单ID调试: changeContent存在={}", changeContent != null);
                                     if (changeContent instanceof Map) {
-                                        Object dxCard = ((Map<?, ?>) changeContent).get("dxCard");
-                                        if (dxCard instanceof Map) {
-                                            Object item = ((Map<?, ?>) dxCard).get("item");
+                                        Object dxCard2 = ((Map<?, ?>) changeContent).get("dxCard");
+                                        log.info("📋 提取订单ID调试: dxCard2存在={}", dxCard2 != null);
+                                        if (dxCard2 instanceof Map) {
+                                            Object item = ((Map<?, ?>) dxCard2).get("item");
+                                            log.info("📋 提取订单ID调试: item存在={}", item != null);
                                             if (item instanceof Map) {
                                                 Object main = ((Map<?, ?>) item).get("main");
+                                                log.info("📋 提取订单ID调试: main存在={}", main != null);
                                                 if (main instanceof Map) {
                                                     Object exContent = ((Map<?, ?>) main).get("exContent");
+                                                    log.info("📋 提取订单ID调试: exContent存在={}", exContent != null);
                                                     if (exContent instanceof Map) {
                                                         Object button = ((Map<?, ?>) exContent).get("button");
+                                                        log.info("📋 提取订单ID调试: button存在={}", button != null);
                                                         if (button instanceof Map) {
                                                             String targetUrl = (String) ((Map<?, ?>) button).get("targetUrl");
-                                                            log.info("📋 提取订单ID: targetUrl={}", targetUrl);
-                                                            
+                                                            log.info("📋 提取订单ID: 方案2找到targetUrl={}", targetUrl);
+
                                                             if (targetUrl != null && targetUrl.contains("id=")) {
                                                                 // 提取 id 参数
                                                                 String[] parts = targetUrl.split("[?&]");
                                                                 for (String part : parts) {
                                                                     if (part.startsWith("id=")) {
                                                                         String orderId = part.substring(3);
-                                                                        log.info("✅ 成功提取订单ID: orderId={}", orderId);
+                                                                        log.info("✅ 成功提取订单ID（方案2）: orderId={}", orderId);
                                                                         return orderId;
                                                                     }
                                                                 }

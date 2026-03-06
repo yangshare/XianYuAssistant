@@ -19,7 +19,7 @@ public class MsgDTO {
     private String sId;
     
     /**
-     * 消息类别（1-用户消息，2-图片，32-已付款待发货，其他）
+     * 消息类别（1-用户消息，2-图片，26-已付款待发货，其他）
      */
     private Integer contentType;
     

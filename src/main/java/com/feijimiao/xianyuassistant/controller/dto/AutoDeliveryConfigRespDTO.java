@@ -39,7 +39,12 @@ public class AutoDeliveryConfigRespDTO {
      * 自动发货的文本内容
      */
     private String autoDeliveryContent;
-    
+
+    /**
+     * 自动确认发货开关：0-关闭，1-开启
+     */
+    private Integer autoConfirmShipment;
+
     /**
      * 创建时间
      */

@@ -22,7 +22,7 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
      * @param xyGoodsId 某鱼商品ID
      * @return 自动发货配置
      */
-    @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
+    @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, auto_confirm_shipment, " +
             "DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') as create_time, " +
             "DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') as update_time " +
             "FROM xianyu_goods_auto_delivery_config " +
@@ -37,7 +37,7 @@ public interface XianyuGoodsAutoDeliveryConfigMapper extends BaseMapper<XianyuGo
      * @param xianyuAccountId 某鱼账号ID
      * @return 自动发货配置列表
      */
-    @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, " +
+    @Select("SELECT id, xianyu_account_id, xianyu_goods_id, xy_goods_id, type, auto_delivery_content, auto_confirm_shipment, " +
             "DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') as create_time, " +
             "DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') as update_time " +
             "FROM xianyu_goods_auto_delivery_config " +

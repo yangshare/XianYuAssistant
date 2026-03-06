@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * 聊天消息自动发货监听器
- * 
+ *
  * <p>监听 {@link ChatMessageReceivedEvent} 事件，判断是否需要触发自动发货</p>
- * 
+ *
  * <p>触发条件：</p>
  * <ul>
- *   <li>contentType = 32（已付款待发货类型）</li>
- *   <li>msgContent 包含 "[已付款，待发货]"</li>
+ *   <li>contentType = 26（已付款待发货类型）</li>
+ *   <li>msgContent 包含 "[我已付款，等待你发货]"</li>
  * </ul>
  * 
  * <p>执行流程：</p>
@@ -82,16 +82,16 @@ public class ChatMessageEventAutoDeliveryListener {
         
         try {
             // 判断是否需要触发自动发货
-            // 条件1：contentType = 32（已付款待发货）
-            // 条件2：msgContent 包含 "[已付款，待发货]"
-            if (message.getContentType() == null || message.getContentType() != 32) {
-                log.info("【账号{}】[AutoDeliveryListener]contentType不符合条件: contentType={}, 需要32", 
+            // 条件1：contentType = 26（已付款待发货）
+            // 条件2：msgContent 包含 "[我已付款，等待你发货]"
+            if (message.getContentType() == null || message.getContentType() != 26) {
+                log.info("【账号{}】[AutoDeliveryListener]contentType不符合条件: contentType={}, 需要26",
                         message.getXianyuAccountId(), message.getContentType());
                 return; // 不是已付款待发货消息
             }
-            
-            if (message.getMsgContent() == null || !message.getMsgContent().contains("[已付款，待发货]")) {
-                log.info("【账号{}】[AutoDeliveryListener]msgContent不符合条件: msgContent={}", 
+
+            if (message.getMsgContent() == null || !message.getMsgContent().contains("[我已付款，等待你发货]")) {
+                log.info("【账号{}】[AutoDeliveryListener]msgContent不符合条件: msgContent={}",
                         message.getXianyuAccountId(), message.getMsgContent());
                 return; // 消息内容不符合条件
             }
@@ -149,9 +149,29 @@ public class ChatMessageEventAutoDeliveryListener {
                 result = autoDeliveryRecordMapper.insert(record);
             } catch (Exception e) {
                 // 检查是否是唯一约束冲突（pnm_id重复）
-                if (e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed")) {
-                    log.info("【账号{}】消息已处理过，跳过自动发货: pnmId={}, xyGoodsId={}", 
+                String errorMsg = e.getMessage();
+                if (errorMsg != null && (errorMsg.contains("Duplicate entry") ||
+                    errorMsg.contains("idx_auto_delivery_record_unique"))) {
+                    log.info("【账号{}】消息已处理过，跳过自动发货: pnmId={}, xyGoodsId={}",
                             message.getXianyuAccountId(), message.getPnmId(), message.getXyGoodsId());
+
+                    // 健壮性检查：如果记录存在但orderState=0（未确认发货），检查实际订单状态
+                    XianyuGoodsAutoDeliveryRecord existingRecord = autoDeliveryRecordMapper.selectByAccountIdAndPnmId(
+                            message.getXianyuAccountId(), message.getPnmId());
+                    if (existingRecord != null && existingRecord.getOrderState() != null
+                            && existingRecord.getOrderState() == 0 && existingRecord.getOrderId() != null) {
+                        log.info("【账号{}】检测到未确认发货记录，尝试同步订单状态: pnmId={}, orderId={}",
+                                message.getXianyuAccountId(), message.getPnmId(), existingRecord.getOrderId());
+
+                        // 尝试确认发货，如果订单已发货会自动更新状态
+                        try {
+                            orderService.confirmShipment(message.getXianyuAccountId(), existingRecord.getOrderId());
+                        } catch (Exception ex) {
+                            log.warn("【账号{}】同步订单状态时发生异常: orderId={}, error={}",
+                                    message.getXianyuAccountId(), existingRecord.getOrderId(), ex.getMessage());
+                        }
+                    }
+
                     return; // 消息已处理，直接返回
                 }
                 throw e; // 其他异常继续抛出

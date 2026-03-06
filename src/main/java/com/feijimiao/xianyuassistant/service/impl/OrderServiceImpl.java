@@ -32,9 +32,6 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private XianyuGoodsAutoDeliveryRecordMapper autoDeliveryRecordMapper;
-    
-    @Autowired
-    private com.feijimiao.xianyuassistant.service.TokenRefreshService tokenRefreshService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -48,14 +45,25 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String confirmShipment(Long accountId, String orderId) {
-        try {
-            log.info("【账号{}】开始确认发货: orderId={}", accountId, orderId);
+        return confirmShipmentWithRetry(accountId, orderId, 0);
+    }
 
-            // 在调用API前先刷新_m_h5_tk token，确保token有效
-            log.info("【账号{}】调用API前刷新_m_h5_tk token...", accountId);
-            boolean refreshSuccess = tokenRefreshService.refreshMh5tkToken(accountId);
-            if (!refreshSuccess) {
-                log.warn("【账号{}】⚠️ Token刷新失败，继续使用现有token尝试", accountId);
+    /**
+     * 确认发货（带重试机制）
+     * 参考Python版本的auto_confirm方法
+     */
+    private String confirmShipmentWithRetry(Long accountId, String orderId, int retryCount) {
+        try {
+            // 最多重试3次
+            if (retryCount >= 4) {
+                log.error("【账号{}】确认发货失败，重试次数过多: orderId={}", accountId, orderId);
+                return null;
+            }
+
+            if (retryCount == 0) {
+                log.info("【账号{}】开始确认发货: orderId={}", accountId, orderId);
+            } else {
+                log.info("【账号{}】重试确认发货 (第{}次): orderId={}", accountId, retryCount, orderId);
             }
 
             // 获取Cookie
@@ -68,16 +76,6 @@ public class OrderServiceImpl implements OrderService {
             // 解析Cookie
             Map<String, String> cookies = XianyuSignUtils.parseCookies(cookieStr);
 
-            // 诊断日志：输出Cookie中的关键字段
-            log.info("【账号{}】Cookie诊断 - _m_h5_tk: {}", accountId,
-                    cookies.getOrDefault("_m_h5_tk", "缺失"));
-            log.info("【账号{}】Cookie诊断 - _m_h5_tk_enc: {}", accountId,
-                    cookies.getOrDefault("_m_h5_tk_enc", "缺失"));
-            log.info("【账号{}】Cookie诊断 - cookie2: {}", accountId,
-                    cookies.getOrDefault("cookie2", "缺失"));
-            log.info("【账号{}】Cookie诊断 - t: {}", accountId,
-                    cookies.getOrDefault("t", "缺失"));
-
             // 提取token
             String token = XianyuSignUtils.extractToken(cookies);
             if (token.isEmpty()) {
@@ -89,20 +87,11 @@ public class OrderServiceImpl implements OrderService {
             String timestamp = String.valueOf(System.currentTimeMillis());
 
             // 构造data参数（参考Python代码）
-            Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("orderId", orderId);
-            dataMap.put("tradeText", "");
-            dataMap.put("picList", new String[0]);
-            dataMap.put("newUnconsign", true);
-            String dataVal = objectMapper.writeValueAsString(dataMap);
-
-            log.info("【账号{}】data参数: {}", accountId, dataVal);
+            String dataVal = String.format("{\"orderId\":\"%s\",\"tradeText\":\"\",\"picList\":[],\"newUnconsign\":true}", orderId);
 
             // 生成签名
             String sign = XianyuSignUtils.generateSign(timestamp, token, dataVal);
 
-            log.info("【账号{}】签名生成: timestamp={}, token={}, sign={}",
-                    accountId, timestamp, token.substring(0, Math.min(10, token.length())) + "...", sign);
             log.info("【账号{}】签名原文: token={}&timestamp={}&appKey=34839810&data={}",
                     accountId, token, timestamp, dataVal);
 
@@ -134,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
             log.info("【账号{}】请求URL: {}", accountId, url);
 
             // 构造POST body
-            String postBody = "data=" + URLEncoder.encode(dataVal, StandardCharsets.UTF_8);
+            String postBody = "data=" + dataVal;
 
             // 构造请求
             HttpRequest request = HttpRequest.newBuilder()
@@ -157,15 +146,32 @@ public class OrderServiceImpl implements OrderService {
             log.info("【账号{}】响应状态码: {}", accountId, response.statusCode());
             log.info("【账号{}】响应内容: {}", accountId, response.body());
 
-            // 诊断日志：检查响应头中的 Set-Cookie
+            // 更新Cookie（参考Python版本第141-156行）
             java.util.List<String> setCookies = response.headers().allValues("Set-Cookie");
             if (!setCookies.isEmpty()) {
                 log.info("【账号{}】响应包含 Set-Cookie，数量: {}", accountId, setCookies.size());
+
+                // 解析新的Cookie
                 for (String setCookie : setCookies) {
                     log.info("【账号{}】Set-Cookie: {}", accountId, setCookie);
+
+                    // 提取cookie名称和值
+                    if (setCookie.contains("=")) {
+                        String[] parts = setCookie.split(";")[0].split("=", 2);
+                        if (parts.length == 2) {
+                            String name = parts[0].trim();
+                            String value = parts[1].trim();
+                            cookies.put(name, value);
+                        }
+                    }
                 }
-            } else {
-                log.info("【账号{}】响应中没有 Set-Cookie", accountId);
+
+                // 更新Cookie字符串
+                String newCookieStr = XianyuSignUtils.formatCookies(cookies);
+
+                // 保存到数据库
+                accountService.updateCookie(accountId, newCookieStr);
+                log.info("【账号{}】已更新Cookie到数据库", accountId);
             }
 
             // 解析响应
@@ -178,29 +184,24 @@ public class OrderServiceImpl implements OrderService {
                 java.util.List<String> ret = (java.util.List<String>) result.get("ret");
                 if (ret != null && !ret.isEmpty()) {
                     String retCode = ret.get(0);
-                    
+
                     // 成功情况
                     if (retCode.contains("SUCCESS")) {
                         log.info("【账号{}】✅ 确认发货成功: orderId={}", accountId, orderId);
-                        // 更新确认发货状态为1
                         updateOrderStateToConfirmed(accountId, orderId);
                         return "确认发货成功";
                     }
-                    
-                    // 已经发货的情况，也视为成功
+
+                    // 已经发货的情况
                     if (retCode.contains("ORDER_ALREADY_DELIVERY")) {
                         log.info("【账号{}】✅ 订单已经发货成功: orderId={}", accountId, orderId);
-                        // 更新确认发货状态为1
                         updateOrderStateToConfirmed(accountId, orderId);
                         return "订单已经发货成功";
                     }
-                    
-                    // Token过期
-                    if (retCode.contains("TOKEN_EXOIRED") || retCode.contains("TOKEN_EXPIRED")) {
-                        log.warn("【账号{}】⚠️ Token已过期: orderId={}", accountId, orderId);
-                        log.warn("【账号{}】建议检查: 1.Cookie是否完整 2.是否需要重新扫码登录 3._m_h5_tk是否正确", accountId);
-                        return null; // 返回null表示失败，前端会显示"确认发货失败"
-                    }
+
+                    // 失败情况 - 自动重试（参考Python版本第168行）
+                    log.warn("【账号{}】❌ 确认发货失败: {}", accountId, retCode);
+                    return confirmShipmentWithRetry(accountId, orderId, retryCount + 1);
                 }
             }
 
@@ -209,6 +210,18 @@ public class OrderServiceImpl implements OrderService {
 
         } catch (Exception e) {
             log.error("【账号{}】确认发货异常: orderId={}", accountId, orderId, e);
+
+            // 网络异常也重试（参考Python版本第175-178行）
+            if (retryCount < 2) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                log.info("【账号{}】网络异常，准备重试...", accountId);
+                return confirmShipmentWithRetry(accountId, orderId, retryCount + 1);
+            }
+
             return null;
         }
     }

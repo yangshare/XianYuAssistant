@@ -203,12 +203,18 @@ public class SyncMessageHandler extends AbstractLwpHandler {
             if (field10 instanceof Map) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> field10Map = (Map<String, Object>) field10;
-                
+
                 // 提取各个字段
                 message.setMsgContent(extractString(field10Map, "reminderContent"));
-                message.setSenderUserName(extractString(field10Map, "reminderTitle"));
+
+                // 只有contentType=14时才提取买家名称
+                Integer contentType = message.getContentType();
+                if (contentType != null && contentType == 14) {
+                    message.setSenderUserName(extractString(field10Map, "reminderTitle"));
+                }
+
                 message.setSenderUserId(extractString(field10Map, "senderUserId"));
-                
+
                 // 提取reminderUrl并解析商品ID
                 String reminderUrl = extractString(field10Map, "reminderUrl");
                 message.setReminderUrl(reminderUrl);
@@ -216,7 +222,7 @@ public class SyncMessageHandler extends AbstractLwpHandler {
                     String goodsId = extractItemIdFromUrl(reminderUrl);
                     message.setXyGoodsId(goodsId);
                 }
-                
+
                 message.setSenderAppV(extractString(field10Map, "_appVersion"));
                 message.setSenderOsType(extractString(field10Map, "_platform"));
             }

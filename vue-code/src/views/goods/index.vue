@@ -395,7 +395,7 @@ onMounted(() => {
 .page-title {
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -418,18 +418,18 @@ onMounted(() => {
 .card-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .goods-id {
   font-family: 'Courier New', Consolas, monospace;
   font-size: 10px;
-  color: #606266;
+  color: var(--text-secondary);
   word-break: break-all;
 }
 
@@ -442,7 +442,7 @@ onMounted(() => {
 .goods-price {
   font-size: 14px;
   font-weight: 600;
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 
 .pagination-container {
@@ -450,6 +450,6 @@ onMounted(() => {
   justify-content: center;
   padding: 10px 0;
   margin-top: 10px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--border-light);
 }
 </style>

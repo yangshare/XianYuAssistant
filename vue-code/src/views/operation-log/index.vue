@@ -447,7 +447,7 @@ onMounted(() => {
 <style scoped>
 .operation-log-page {
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--bg-base);
   min-height: 100vh;
 }
 
@@ -458,7 +458,7 @@ onMounted(() => {
 .page-title {
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -485,7 +485,7 @@ onMounted(() => {
 .panel-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .header-actions {
@@ -510,19 +510,19 @@ onMounted(() => {
 }
 
 .account-item:hover {
-  background-color: #f5f7fa;
+  background-color: var(--bg-surface);
 }
 
 .account-item.active {
-  background-color: #ecf5ff;
-  border-color: #409eff;
+  background-color: var(--bg-hover);
+  border-color: var(--theme-primary);
 }
 
 .account-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--theme-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -541,7 +541,7 @@ onMounted(() => {
 .account-name {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -550,7 +550,7 @@ onMounted(() => {
 
 .account-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .empty-state {

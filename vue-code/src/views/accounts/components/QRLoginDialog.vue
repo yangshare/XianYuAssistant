@@ -165,13 +165,13 @@ const handleClose = () => {
 
 .qr-code {
   max-width: 200px;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
 }
 
 .qr-tip {
   margin: 10px 0;
-  color: #606266;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -186,6 +186,6 @@ const handleClose = () => {
 .session-id {
   margin: 10px 0;
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 </style>

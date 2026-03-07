@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import AppHeader from './components/AppHeader.vue'
 </script>
 
 <template>
   <div class="app-container">
-    <el-container>
-      <el-aside width="240px" class="sidebar">
+    <!-- 顶部栏 -->
+    <AppHeader />
+
+    <el-container class="main-container">
+      <!-- 侧边栏 -->
+      <el-aside width="200px" class="sidebar">
         <div class="logo">
           <div class="logo-icon">闲</div>
           <div class="logo-text">自动化管理</div>
@@ -72,6 +77,7 @@ import { RouterView } from 'vue-router'
         </el-menu>
       </el-aside>
 
+      <!-- 主内容区 -->
       <el-container>
         <el-main>
           <RouterView />
@@ -84,45 +90,45 @@ import { RouterView } from 'vue-router'
 <style scoped>
 .app-container {
   height: 100vh;
-  background: #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-base);
 }
 
-.el-container {
-  height: 100%;
+.main-container {
+  flex: 1;
+  overflow: hidden;
 }
 
 .sidebar {
-  background: #f8f8f8;
-  border-right: 1px solid #d4d4d4;
-  box-shadow: none;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border-light);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: none;
+  padding: 16px 20px;
   gap: 12px;
 }
 
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: #2a2a2a;
-  border-radius: 8px;
+  background: var(--theme-primary);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
-  margin-right: 0;
 }
 
 .logo-text {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .nav-menu {
@@ -131,26 +137,26 @@ import { RouterView } from 'vue-router'
 }
 
 :deep(.el-menu-item) {
-  margin: 2px 16px;
-  border-radius: 8px;
-  color: #666666;
-  transition: all 0.2s;
+  margin: 2px 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
 }
 
 :deep(.el-menu-item:hover) {
-  background: #ececec !important;
-  color: #1a1a1a;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 :deep(.el-menu-item.is-active) {
-  background: #1a1a1a !important;
+  background: var(--theme-primary) !important;
   color: white;
 }
 
 .el-main {
-  padding: 32px 40px;
+  padding: 24px;
   overflow-y: auto;
-  background: #e8e8e8;
+  background: var(--bg-base);
 }
 
 .menu-group-title {
@@ -175,7 +181,7 @@ import { RouterView } from 'vue-router'
 .group-text {
   font-size: 10px;
   font-weight: 700;
-  color: #aaaaaa;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -200,7 +206,7 @@ import { RouterView } from 'vue-router'
 }
 
 @media (max-width: 480px) {
-  .el-container {
+  .main-container {
     flex-direction: column;
   }
 

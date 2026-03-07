@@ -335,7 +335,7 @@ const showCookieHelp = () => {
             title="点击查看大图"
           />
         </div>
-        <p style="margin-top: 12px; color: #909399; font-size: 12px; text-align: center;">
+        <p style="margin-top: 12px; color: var(--text-tertiary); font-size: 12px; text-align: center;">
           💡 点击图片可查看大图
         </p>
         <p style="margin-top: 8px; color: #f56c6c; font-size: 12px; text-align: center;">
@@ -375,7 +375,7 @@ const showTokenHelp = () => {
             title="点击查看大图"
           />
         </div>
-        <p style="margin-top: 12px; color: #909399; font-size: 12px; text-align: center;">
+        <p style="margin-top: 12px; color: var(--text-tertiary); font-size: 12px; text-align: center;">
           💡 点击图片可查看大图
         </p>
         <p style="margin-top: 8px; color: #f56c6c; font-size: 12px; text-align: center;">
@@ -699,7 +699,7 @@ onUnmounted(() => {
 .page-title {
   font-size: 22px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -737,7 +737,7 @@ onUnmounted(() => {
 .panel-title {
   font-size: 17px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .account-list {
@@ -749,7 +749,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-color);
   border-radius: 3px;
   margin-bottom: 6px;
   cursor: pointer;
@@ -758,20 +758,20 @@ onUnmounted(() => {
 }
 
 .account-item:hover {
-  background-color: #f5f7fa;
-  border-color: #c0c4cc;
+  background-color: var(--bg-surface);
+  border-color: var(--text-tertiary);
 }
 
 .account-item.active {
-  background-color: #ecf5ff;
-  border-color: #409eff;
+  background-color: var(--bg-hover);
+  border-color: var(--theme-primary);
 }
 
 .account-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #409eff;
+  background: var(--theme-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -790,7 +790,7 @@ onUnmounted(() => {
 .account-name {
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -799,7 +799,7 @@ onUnmounted(() => {
 
 .account-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .empty-state {
@@ -821,10 +821,10 @@ onUnmounted(() => {
 
 /* 连接状态主卡片 */
 .connection-main-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: var(--bg-elevated);
   border-radius: 12px;
-  border: 2px solid #409eff;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.12);
+  border: 2px solid var(--theme-primary);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -834,8 +834,8 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #ecf5ff 0%, #ffffff 100%);
-  border-bottom: 2px solid #d9ecff;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .header-left {
@@ -856,11 +856,11 @@ onUnmounted(() => {
 }
 
 .icon-success {
-  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%);
+  background: var(--color-success);
 }
 
 .icon-danger {
-  background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+  background: var(--color-danger);
 }
 
 .icon-large {
@@ -876,14 +876,14 @@ onUnmounted(() => {
 .main-title {
   font-size: 17px;
   font-weight: 700;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
   letter-spacing: 0.3px;
 }
 
 .main-subtitle {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
   margin: 0 0 3px 0;
   font-weight: 500;
 }
@@ -899,15 +899,15 @@ onUnmounted(() => {
 }
 
 .note-danger {
-  color: #f56c6c;
-  background: #fef0f0;
-  border: 1px solid #fde2e2;
+  color: var(--color-danger);
+  background: rgba(255, 77, 79, 0.15);
+  border: 1px solid var(--color-danger);
 }
 
 .note-success {
-  color: #67c23a;
-  background: #f0f9ff;
-  border: 1px solid #c6f6d5;
+  color: var(--color-success);
+  background: rgba(82, 196, 26, 0.15);
+  border: 1px solid var(--color-success);
 }
 
 .header-right {
@@ -930,9 +930,9 @@ onUnmounted(() => {
 }
 
 .detail-section {
-  background: white;
+  background: var(--bg-elevated);
   border-radius: 10px;
-  border: 2px solid #e4e7ed;
+  border: 2px solid var(--border-color);
   padding: 14px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
@@ -943,11 +943,11 @@ onUnmounted(() => {
 }
 
 .cookie-section {
-  border-color: #e6a23c;
+  border-color: var(--color-warning);
 }
 
 .token-section {
-  border-color: #67c23a;
+  border-color: var(--color-success);
 }
 
 .section-header {
@@ -956,7 +956,7 @@ onUnmounted(() => {
   gap: 10px;
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f5f7fa;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .section-icon {
@@ -973,13 +973,13 @@ onUnmounted(() => {
 .section-title {
   font-size: 14px;
   font-weight: 700;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .section-note {
   font-size: 11px;
-  color: #909399;
+  color: var(--text-tertiary);
   margin: 0;
   line-height: 1.4;
 }
@@ -991,15 +991,15 @@ onUnmounted(() => {
 }
 
 .info-box {
-  background: #f8f9fa;
+  background: var(--bg-surface);
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid var(--border-color);
 }
 
 .info-box-label {
   font-size: 10px;
-  color: #909399;
+  color: var(--text-tertiary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1009,13 +1009,13 @@ onUnmounted(() => {
 .info-box-value {
   font-family: 'Courier New', Consolas, monospace;
   font-size: 10px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.5;
   word-break: break-all;
-  background: white;
+  background: var(--bg-elevated);
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid #dcdfe6;
+  border: 1px solid var(--border-color);
   max-height: 80px;
   overflow-y: auto;
 }
@@ -1028,12 +1028,12 @@ onUnmounted(() => {
 .time-value {
   font-size: 11px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .info-box-meta {
   font-size: 10px;
-  color: #909399;
+  color: var(--text-tertiary);
   margin-top: 4px;
   text-align: right;
 }
@@ -1055,8 +1055,8 @@ onUnmounted(() => {
 /* 主操作区域 */
 .main-actions {
   padding: 14px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-  border-top: 1px solid #e4e7ed;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: center;
 }
@@ -1078,21 +1078,21 @@ onUnmounted(() => {
 
 .action-tip {
   font-size: 11px;
-  color: #909399;
+  color: var(--text-tertiary);
   text-align: center;
   line-height: 1.5;
   max-width: 80%;
 }
 
 .start-connection-btn {
-  background: linear-gradient(135deg, #67c23a 0%, #85ce61 100%) !important;
-  border-color: #67c23a !important;
-  box-shadow: 0 2px 8px rgba(103, 194, 58, 0.3) !important;
+  background: var(--color-success) !important;
+  border-color: var(--color-success) !important;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3) !important;
 }
 
 .start-connection-btn:hover {
-  background: linear-gradient(135deg, #85ce61 0%, #95d475 100%) !important;
-  box-shadow: 0 4px 12px rgba(103, 194, 58, 0.4) !important;
+  background: #73d13d !important;
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4) !important;
   transform: translateY(-1px);
 }
 
@@ -1103,13 +1103,13 @@ onUnmounted(() => {
 .logs-header {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .logs-container {
-  background: #2c3e50;
-  color: #ecf0f1;
+  background: var(--bg-base);
+  color: var(--text-secondary);
   border-radius: 8px;
   padding: 12px;
   font-family: 'Courier New', Consolas, monospace;
@@ -1128,22 +1128,22 @@ onUnmounted(() => {
 }
 
 .log-time {
-  color: #95a5a6;
+  color: var(--text-tertiary);
   margin-right: 6px;
   font-size: 11px;
 }
 
 .log-message {
-  color: #ecf0f1;
+  color: var(--text-primary);
 }
 
 .log-entry.log-error .log-message {
-  color: #e74c3c;
+  color: var(--color-danger);
 }
 
 .log-empty {
   text-align: center;
-  color: #95a5a6;
+  color: var(--text-tertiary);
   padding: 16px;
   font-size: 12px;
 }
@@ -1156,12 +1156,12 @@ onUnmounted(() => {
 
 .account-list::-webkit-scrollbar-thumb,
 .logs-container::-webkit-scrollbar-thumb {
-  background: #dcdfe6;
+  background: var(--border-color);
   border-radius: 3px;
 }
 
 .logs-container::-webkit-scrollbar-thumb {
-  background: #34495e;
+  background: var(--text-tertiary);
 }
 
 /* 响应式布局 */
@@ -1245,7 +1245,7 @@ onUnmounted(() => {
   max-height: 50vh;
   width: auto;
   height: auto;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1257,7 +1257,7 @@ onUnmounted(() => {
 
 .cookie-help-dialog .cookie-help-image:hover {
   transform: scale(1.02);
-  border-color: #409eff;
+  border-color: var(--theme-primary);
   box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
 }
 
@@ -1291,7 +1291,7 @@ onUnmounted(() => {
   max-height: 50vh;
   width: auto;
   height: auto;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1320,7 +1320,7 @@ onUnmounted(() => {
 .captcha-guide-dialog .el-message-box__message {
   font-size: 14px;
   line-height: 1.8;
-  color: #606266;
+  color: var(--text-secondary);
   white-space: pre-line;
   text-align: left;
 }
@@ -1332,7 +1332,7 @@ onUnmounted(() => {
 
 .captcha-guide-dialog .el-button--primary {
   background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%);
-  border-color: #409eff;
+  border-color: var(--theme-primary);
   font-weight: 500;
   padding: 12px 24px;
 }

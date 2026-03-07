@@ -693,7 +693,7 @@ onMounted(() => {
 .page-title {
   font-size: 22px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -705,7 +705,7 @@ onMounted(() => {
 
 .account-label {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -745,12 +745,12 @@ onMounted(() => {
 .card-title {
   font-size: 17px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .goods-list {
@@ -762,7 +762,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-light);
   border-radius: 3px;
   margin-bottom: 6px;
   cursor: pointer;
@@ -770,13 +770,13 @@ onMounted(() => {
 }
 
 .goods-item:hover {
-  background-color: #f5f7fa;
-  border-color: #c0c4cc;
+  background-color: var(--bg-surface);
+  border-color: var(--text-tertiary);
 }
 
 .goods-item.active {
-  background-color: #ecf5ff;
-  border-color: #409eff;
+  background-color: var(--bg-hover);
+  border-color: var(--theme-primary);
 }
 
 .goods-image {
@@ -795,7 +795,7 @@ onMounted(() => {
 .goods-title {
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -811,7 +811,7 @@ onMounted(() => {
 .goods-price {
   font-size: 15px;
   font-weight: 600;
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 
 .empty-goods,
@@ -843,7 +843,7 @@ onMounted(() => {
   flex: 1;
   font-size: 15px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -855,20 +855,20 @@ onMounted(() => {
 }
 
 .config-time {
-  color: #909399;
+  color: var(--text-tertiary);
   font-size: 13px;
 }
 
 .switch-label {
   margin-left: 10px;
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 .form-tip {
   margin-left: 10px;
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
   line-height: 1.5;
 }
 
@@ -880,13 +880,13 @@ onMounted(() => {
 
 .last-update-time {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .delivery-records-section {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--border-light);
 }
 
 .config-form.records-expanded .delivery-records-section {
@@ -912,12 +912,12 @@ onMounted(() => {
 .records-title {
   font-size: 15px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .records-count {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .records-actions {
@@ -931,7 +931,7 @@ onMounted(() => {
 }
 
 .records-table-wrapper {
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-light);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 15px;
@@ -946,8 +946,8 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   padding: 12px 15px;
-  background-color: #fafafa;
-  border-top: 1px solid #ebeef5;
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
   flex-shrink: 0;
 }
 
@@ -960,17 +960,17 @@ onMounted(() => {
 .buyer-name {
   font-size: 14px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .buyer-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .content-text {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.5;
   word-break: break-all;
 }
@@ -978,7 +978,7 @@ onMounted(() => {
 .order-id {
   font-family: 'Courier New', monospace;
   font-size: 13px;
-  color: #409eff;
+  color: var(--theme-primary);
   font-weight: 500;
 }
 </style>

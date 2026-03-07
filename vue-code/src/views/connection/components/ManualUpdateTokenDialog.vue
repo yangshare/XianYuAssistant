@@ -106,7 +106,7 @@ const handleClose = () => {
             :rows="3"
             placeholder="请输入新的WebSocket Token"
           />
-          <div style="margin-top: 8px; color: #909399; font-size: 12px;">
+          <div style="margin-top: 8px; color: var(--text-tertiary); font-size: 12px;">
             请确保Token格式正确，错误的Token会导致WebSocket连接失败
           </div>
         </el-form-item>

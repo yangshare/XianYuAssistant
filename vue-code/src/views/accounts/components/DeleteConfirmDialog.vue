@@ -90,7 +90,7 @@ const handleConfirm = async () => {
 .confirm-text {
   margin: 0 0 20px 0;
   font-size: 16px;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .el-alert {

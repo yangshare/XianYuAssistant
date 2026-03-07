@@ -70,37 +70,37 @@ const features = [
     icon: '👥',
     title: '多账号管理',
     description: '支持同时管理多个某鱼账号，轻松切换',
-    color: '#409eff'
+    color: 'var(--color-primary)'
   },
   {
     icon: '🚀',
     title: '自动发货',
     description: '买家付款后自动发送发货信息，节省时间',
-    color: '#67c23a'
+    color: 'var(--color-success)'
   },
   {
     icon: '💬',
     title: '自动回复',
     description: '智能匹配关键词，自动回复买家消息',
-    color: '#e6a23c'
+    color: 'var(--color-warning)'
   },
   {
     icon: '📊',
     title: '数据统计',
     description: '实时查看商品、订单、消息等数据统计',
-    color: '#f56c6c'
+    color: 'var(--color-danger)'
   },
   {
     icon: '🔄',
     title: 'Token自动刷新',
     description: '智能维护登录状态，无需频繁重新登录',
-    color: '#909399'
+    color: 'var(--text-tertiary)'
   },
   {
     icon: '📜',
     title: '操作日志',
     description: '详细记录所有操作，方便追踪和排查',
-    color: '#606266'
+    color: 'var(--text-secondary)'
   }
 ];
 

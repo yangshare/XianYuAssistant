@@ -556,7 +556,7 @@ onUnmounted(() => {
 .page-title {
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -591,7 +591,7 @@ onUnmounted(() => {
 .panel-title {
   font-size: 17px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .goods-list-container {
@@ -602,7 +602,7 @@ onUnmounted(() => {
 .goods-item {
   display: flex;
   padding: 10px;
-  border: 1px solid #ebeef5;
+  border: 1px solid var(--border-light);
   border-radius: 3px;
   margin-bottom: 6px;
   cursor: pointer;
@@ -611,13 +611,13 @@ onUnmounted(() => {
 }
 
 .goods-item:hover {
-  background-color: #f5f7fa;
-  border-color: #c0c4cc;
+  background-color: var(--bg-surface);
+  border-color: var(--text-tertiary);
 }
 
 .goods-item.active {
-  background-color: #ecf5ff;
-  border-color: #409eff;
+  background-color: var(--bg-hover);
+  border-color: var(--theme-primary);
 }
 
 .goods-cover {
@@ -626,7 +626,7 @@ onUnmounted(() => {
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
-  background-color: #f5f7fa;
+  background-color: var(--bg-surface);
 }
 
 .cover-img {
@@ -643,7 +643,7 @@ onUnmounted(() => {
 .goods-title {
   font-size: 13px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
@@ -652,13 +652,13 @@ onUnmounted(() => {
 
 .goods-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .loading-more {
   text-align: center;
   padding: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
   font-size: 14px;
 }
 
@@ -684,33 +684,33 @@ onUnmounted(() => {
 .card-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 14px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .message-id {
   font-family: 'Courier New', Consolas, monospace;
   font-size: 12px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 .goods-id {
   font-family: 'Courier New', Consolas, monospace;
   font-size: 12px;
-  color: #409eff;
+  color: var(--theme-primary);
 }
 
 .message-time {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .no-action {
-  color: #c0c4cc;
+  color: var(--text-tertiary);
 }
 
 .message-content {
@@ -718,7 +718,7 @@ onUnmounted(() => {
 }
 
 .message-content.user-message {
-  border: 2px solid #67c23a;
+  border: 2px solid var(--color-success);
   border-radius: 4px;
 }
 
@@ -727,7 +727,7 @@ onUnmounted(() => {
   justify-content: center;
   padding: 10px 0;
   margin-top: 10px;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--border-light);
 }
 
 .quick-reply-content {
@@ -737,7 +737,7 @@ onUnmounted(() => {
 }
 
 .reply-info {
-  background-color: #f5f7fa;
+  background-color: var(--bg-surface);
   padding: 12px;
   border-radius: 4px;
   display: flex;
@@ -752,13 +752,13 @@ onUnmounted(() => {
 }
 
 .info-label {
-  color: #909399;
+  color: var(--text-tertiary);
   font-weight: 500;
   flex-shrink: 0;
 }
 
 .info-value {
-  color: #303133;
+  color: var(--text-primary);
   flex: 1;
   word-break: break-all;
 }

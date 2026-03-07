@@ -283,7 +283,7 @@ onMounted(() => {
 .page-title {
   font-size: 22px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -295,7 +295,7 @@ onMounted(() => {
 
 .account-label {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -315,12 +315,12 @@ onMounted(() => {
 .card-title {
   font-size: 17px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .table-wrapper {
@@ -337,7 +337,7 @@ onMounted(() => {
 
 .content-text {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.5;
   word-break: break-all;
 }

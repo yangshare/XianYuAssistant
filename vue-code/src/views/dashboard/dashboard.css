@@ -1,6 +1,6 @@
 .dashboard-page {
   padding: 20px;
-  background: #f5f7fa;
+  background: var(--bg-base);
 }
 
 /* 统计卡片 */
@@ -15,7 +15,7 @@
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px var(--shadow-lg);
 }
 
 .stat-content {
@@ -36,15 +36,15 @@
 }
 
 .account-icon {
-  background: #409eff;
+  background: var(--theme-primary);
 }
 
 .goods-icon {
-  background: #67c23a;
+  background: var(--color-success);
 }
 
 .online-icon {
-  background: #e6a23c;
+  background: var(--color-warning);
 }
 
 .stat-info {
@@ -54,14 +54,14 @@
 .stat-value {
   font-size: 32px;
   font-weight: bold;
-  color: #303133;
+  color: var(--text-primary);
   line-height: 1;
   margin-bottom: 8px;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 /* 卡片头部 */
@@ -73,12 +73,12 @@
 .card-title {
   font-size: 20px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .card-subtitle {
   font-size: 14px;
-  color: #909399;
+  color: var(--text-tertiary);
   margin-top: 4px;
 }
 
@@ -106,13 +106,13 @@
 
 .step-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-color: #409eff;
+  box-shadow: 0 8px 16px var(--shadow-lg);
+  border-color: var(--theme-primary);
 }
 
 .step-card.active {
-  border-color: #409eff;
-  background: #ecf5ff;
+  border-color: var(--theme-primary);
+  background: var(--bg-surface);
 }
 
 .step-icon {
@@ -124,14 +124,14 @@
 .step-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
   text-align: center;
 }
 
 .step-description {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   text-align: center;
   margin: 0 0 16px 0;
   line-height: 1.6;
@@ -145,7 +145,7 @@
 
 .step-details li {
   font-size: 13px;
-  color: #909399;
+  color: var(--text-tertiary);
   padding: 6px 0;
   line-height: 1.6;
   position: relative;
@@ -156,7 +156,7 @@
   content: '▸';
   position: absolute;
   left: 0;
-  color: #409eff;
+  color: var(--theme-primary);
 }
 
 .step-button {
@@ -179,7 +179,7 @@
 
 .feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px var(--shadow-lg);
 }
 
 .feature-icon {
@@ -190,13 +190,13 @@
 .feature-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
 .feature-description {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
@@ -210,15 +210,15 @@
 .faq-question {
   font-size: 15px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .faq-answer {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.8;
   padding: 12px 20px;
-  background: #f5f7fa;
+  background: var(--bg-base);
   border-radius: 8px;
 }
 
@@ -235,7 +235,7 @@
 
 .tips-list li {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   padding: 6px 0;
   line-height: 1.8;
   position: relative;
@@ -246,6 +246,6 @@
   content: '•';
   position: absolute;
   left: 0;
-  color: #409eff;
+  color: var(--theme-primary);
   font-weight: bold;
 }

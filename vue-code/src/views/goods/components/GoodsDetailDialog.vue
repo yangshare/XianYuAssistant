@@ -282,7 +282,7 @@ watch(() => props.modelValue, (val) => {
 .main-image {
   width: 100%;
   height: 350px;
-  background: #f5f7fa;
+  background: var(--bg-surface);
   border-radius: 6px;
   overflow: hidden;
   display: flex;
@@ -313,11 +313,11 @@ watch(() => props.modelValue, (val) => {
 }
 
 .thumbnail:hover {
-  border-color: #409eff;
+  border-color: var(--theme-primary);
 }
 
 .thumbnail.active {
-  border-color: #409eff;
+  border-color: var(--theme-primary);
 }
 
 .thumbnail :deep(.el-image) {
@@ -334,20 +334,20 @@ watch(() => props.modelValue, (val) => {
 
 .title-section {
   padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .goods-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
   margin: 0 0 6px 0;
   line-height: 1.4;
 }
 
 .goods-id {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
   font-family: 'Courier New', Consolas, monospace;
 }
 
@@ -356,31 +356,31 @@ watch(() => props.modelValue, (val) => {
   align-items: center;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .price {
   font-size: 24px;
   font-weight: 700;
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 
 .description {
   padding: 12px;
-  background: #f5f7fa;
+  background: var(--bg-surface);
   border-radius: 6px;
 }
 
 .description-title {
   font-size: 13px;
   font-weight: 600;
-  color: #606266;
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
 .description-content {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.5;
   white-space: pre-wrap;
 }
@@ -390,8 +390,8 @@ watch(() => props.modelValue, (val) => {
   flex-direction: column;
   gap: 12px;
   padding: 12px 0;
-  border-top: 1px solid #ebeef5;
-  border-bottom: 1px solid #ebeef5;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .config-item {
@@ -402,7 +402,7 @@ watch(() => props.modelValue, (val) => {
 
 .config-label {
   font-size: 13px;
-  color: #606266;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -414,7 +414,7 @@ watch(() => props.modelValue, (val) => {
 
 .switch-status {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .time-info {
@@ -425,7 +425,7 @@ watch(() => props.modelValue, (val) => {
 
 .time-item {
   font-size: 12px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .time-label {
@@ -433,7 +433,7 @@ watch(() => props.modelValue, (val) => {
 }
 
 .time-value {
-  color: #606266;
+  color: var(--text-secondary);
 }
 
 /* 响应式 */

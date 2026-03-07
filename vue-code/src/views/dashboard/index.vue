@@ -4,13 +4,13 @@ import { useRouter } from 'vue-router';
 import { useDashboard } from './useDashboard';
 
 const router = useRouter();
-const { loading, stats, loadStatistics } = useDashboard();
+const { loading, stats, activeStep, loadStatistics, loadStepStatus } = useDashboard();
 
-// 组件挂载时加载数据
-loadStatistics();
+// 用户手动选择的步骤（用于卡片点击交互）
+const selectedStep = ref(0);
 
-// 当前激活的步骤
-const activeStep = ref(0);
+// 组件挂载时并行加载数据
+Promise.all([loadStatistics(), loadStepStatus()]);
 
 // 快速开始步骤
 const quickStartSteps = [
@@ -63,6 +63,20 @@ const quickStartSteps = [
     ]
   }
 ];
+
+// 时间轴类型
+const getTimelineType = (index: number) => {
+  if (selectedStep.value === index) return 'primary';
+  if (index < activeStep.value) return 'success';
+  return 'info';
+};
+
+// 时间轴颜色
+const getTimelineColor = (index: number) => {
+  if (selectedStep.value === index) return 'var(--theme-primary)';
+  if (index < activeStep.value) return 'var(--color-success)';
+  return 'var(--border-color)';
+};
 
 // 功能特性
 const features = [
@@ -128,6 +142,13 @@ const faqs = [
 const navigateTo = (route: string) => {
   router.push(route);
 };
+
+// 选择步骤
+const selectStep = (index: number) => {
+  console.log('点击卡片 index:', index, '当前 selectedStep:', selectedStep.value);
+  selectedStep.value = index;
+  console.log('更新后 selectedStep:', selectedStep.value);
+};
 </script>
 
 <template>
@@ -180,47 +201,47 @@ const navigateTo = (route: string) => {
         </div>
       </template>
 
-      <el-steps :active="activeStep" align-center class="steps-container">
-        <el-step
-          v-for="(step, index) in quickStartSteps"
-          :key="index"
-          :title="step.title"
-          :icon="step.icon"
-        />
-      </el-steps>
-
-      <div class="steps-content">
-        <el-row :gutter="20">
-          <el-col
-            :span="6"
+      <div class="timeline-container">
+        <el-timeline>
+          <el-timeline-item
             v-for="(step, index) in quickStartSteps"
             :key="index"
+            :icon="step.icon"
+            :type="getTimelineType(index)"
+            :color="getTimelineColor(index)"
+            :hollow="selectedStep !== index"
+            :size="selectedStep === index ? 'large' : 'normal'"
+            class="timeline-item"
           >
             <el-card
+              :class="['timeline-card', { 'active': selectedStep === index }]"
               shadow="hover"
-              class="step-card"
-              :class="{ active: activeStep === index }"
-              @click="activeStep = index"
+              @click="selectStep(index)"
             >
-              <div class="step-icon">{{ step.icon }}</div>
-              <h3 class="step-title">{{ step.title }}</h3>
-              <p class="step-description">{{ step.description }}</p>
-              <ul class="step-details">
-                <li v-for="(detail, idx) in step.details" :key="idx">
-                  {{ detail }}
-                </li>
-              </ul>
-              <el-button
-                type="primary"
-                size="small"
-                @click.stop="navigateTo(step.route)"
-                class="step-button"
-              >
-                前往操作 →
-              </el-button>
+              <div class="timeline-card-header">
+                <span class="timeline-step-icon">{{ step.icon }}</span>
+                <span class="timeline-step-title">{{ step.title }}</span>
+              </div>
+              <div class="timeline-step-description">{{ step.description }}</div>
+
+              <div v-if="selectedStep === index" class="timeline-details">
+                <ul class="timeline-details-list">
+                  <li v-for="(detail, idx) in step.details" :key="idx">
+                    {{ detail }}
+                  </li>
+                </ul>
+                <el-button
+                  type="primary"
+                  size="small"
+                  class="timeline-button"
+                  @click.stop="navigateTo(step.route)"
+                >
+                  前往操作 →
+                </el-button>
+              </div>
             </el-card>
-          </el-col>
-        </el-row>
+          </el-timeline-item>
+        </el-timeline>
       </div>
     </el-card>
 

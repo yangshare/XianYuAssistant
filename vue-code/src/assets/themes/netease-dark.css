@@ -203,6 +203,69 @@ a:hover {
   background: var(--bg-hover) !important;
 }
 
+/* 固定列样式 */
+.el-table__fixed,
+.el-table__fixed-right {
+  background: var(--bg-surface) !important;
+}
+
+.el-table__fixed::before,
+.el-table__fixed-right::before {
+  background-color: var(--border-color) !important;
+}
+
+.el-table__fixed-right-patch {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.el-table .el-table__fixed th.el-table__cell,
+.el-table .el-table__fixed-right th.el-table__cell {
+  background: var(--bg-elevated) !important;
+}
+
+.el-table .el-table__fixed td.el-table__cell,
+.el-table .el-table__fixed-right td.el-table__cell {
+  background: var(--bg-surface) !important;
+}
+
+.el-table .el-table__fixed tr:hover > td.el-table__cell,
+.el-table .el-table__fixed-right tr:hover > td.el-table__cell {
+  background: var(--bg-hover) !important;
+}
+
+/* 固定列条纹样式 */
+.el-table--striped .el-table__fixed .el-table__row--striped td.el-table__cell,
+.el-table--striped .el-table__fixed-right .el-table__row--striped td.el-table__cell {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Element Plus 新版固定列样式 */
+.el-table th.el-table-fixed-column--left,
+.el-table th.el-table-fixed-column--right {
+  background-color: var(--bg-elevated) !important;
+}
+
+.el-table td.el-table-fixed-column--left,
+.el-table td.el-table-fixed-column--right {
+  background-color: var(--bg-surface) !important;
+}
+
+.el-table tr:hover td.el-table-fixed-column--left,
+.el-table tr:hover td.el-table-fixed-column--right {
+  background-color: var(--bg-hover) !important;
+}
+
+.el-table.is-scrolling-none th.el-table-fixed-column--left,
+.el-table.is-scrolling-none th.el-table-fixed-column--right {
+  background-color: var(--bg-elevated) !important;
+}
+
+.el-table.is-scrolling-none td.el-table-fixed-column--left,
+.el-table.is-scrolling-none td.el-table-fixed-column--right {
+  background-color: var(--bg-surface) !important;
+}
+
 .el-table__empty-text {
   color: var(--text-tertiary);
 }

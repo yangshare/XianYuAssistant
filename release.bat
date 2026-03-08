@@ -24,7 +24,8 @@ if "%version%"=="" (
 )
 
 :: 验证版本号格式 (semver: X.Y.Z)
-echo %version% | findstr /r "^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$" >nul
+:: 使用 <nul set /p= 避免echo添加空格，并使用简化的正则表达式
+<nul set /p=%version% | findstr /r "[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*" >nul
 if errorlevel 1 (
     echo Error: Invalid version format. Expected: X.Y.Z ^(e.g., 1.0.0^)
     pause

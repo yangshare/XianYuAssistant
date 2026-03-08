@@ -4,18 +4,21 @@
 # 阶段1: 构建前端
 FROM node:20-alpine AS frontend-builder
 
+# 安装 pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app/vue-code
 
 # 复制前端项目文件
-COPY vue-code/package*.json ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm install
+COPY vue-code/package*.json vue-code/pnpm-lock.yaml ./
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
 COPY vue-code/ ./
-RUN npm run build:spring
+RUN pnpm run build:spring
 
 # 阶段2: 构建后端
-FROM maven:3.9-eclipse-temurin-17 AS backend-builder
+FROM maven:3.9-eclipse-temurin-21 AS backend-builder
 
 WORKDIR /app
 
@@ -35,7 +38,7 @@ RUN --mount=type=cache,target=/root/.m2 \
     mvn clean package -DskipTests
 
 # 阶段3: 运行时镜像
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 

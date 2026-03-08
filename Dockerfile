@@ -1,4 +1,6 @@
+# syntax=docker/dockerfile:1.4
 # 多阶段构建 Dockerfile
+
 # 阶段1: 构建前端
 FROM node:20-alpine AS frontend-builder
 
@@ -6,7 +8,8 @@ WORKDIR /app/vue-code
 
 # 复制前端项目文件
 COPY vue-code/package*.json ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 COPY vue-code/ ./
 RUN npm run build:spring
@@ -18,7 +21,8 @@ WORKDIR /app
 
 # 复制 Maven 配置文件
 COPY pom.xml ./
-RUN mvn dependency:go-offline -B
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn dependency:go-offline -B
 
 # 复制后端源代码
 COPY src ./src
@@ -27,7 +31,8 @@ COPY src ./src
 COPY --from=frontend-builder /app/src/main/resources/static ./src/main/resources/static
 
 # 构建后端
-RUN mvn clean package -DskipTests
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean package -DskipTests
 
 # 阶段3: 运行时镜像
 FROM eclipse-temurin:17-jre-alpine

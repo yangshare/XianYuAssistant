@@ -2,31 +2,51 @@ version: '3.8'
 
 services:
   xianyu-assistant:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: yangshare/xianyu-assistant:latest
+    # 如需本地构建，取消注释下行
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: xianyu-assistant
     ports:
-      - "8080:8080"
+      - "${SERVER_PORT:-12400}:12400"
     volumes:
-      # 持久化数据库文件
-      - ./data:/app/data
       # 持久化日志
       - ./logs:/app/logs
     environment:
       - JAVA_OPTS=-Xms256m -Xmx512m
       - TZ=Asia/Shanghai
-      - SPRING_PROFILES_ACTIVE=prod
+      # MySQL 数据库配置（通过环境变量或 .env 文件配置）
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:mysql://host.docker.internal:3306/xianyu_assistant?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-root}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:?SPRING_DATASOURCE_PASSWORD is required}
     restart: unless-stopped
-    networks:
-      - xianyu-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    # 如果使用 Docker 内置 MySQL，取消注释下面的 depends_on
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # 健康检查由 Dockerfile 定义，此处继承即可
 
-networks:
-  xianyu-network:
-    driver: bridge
+  # 可选：Docker 内置 MySQL（如需要可取消注释）
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: xianyu-mysql
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+  #     - MYSQL_DATABASE=xianyu_assistant
+  #     - TZ=Asia/Shanghai
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+# volumes:
+#   mysql-data:

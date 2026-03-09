@@ -78,44 +78,16 @@ const getTimelineColor = (index: number) => {
   return 'var(--border-color)';
 };
 
-// 功能特性
-const features = [
-  {
-    icon: '👥',
-    title: '多账号管理',
-    description: '支持同时管理多个某鱼账号，轻松切换',
-    color: 'var(--color-primary)'
-  },
-  {
-    icon: '🚀',
-    title: '自动发货',
-    description: '买家付款后自动发送发货信息，节省时间',
-    color: 'var(--color-success)'
-  },
-  {
-    icon: '💬',
-    title: '自动回复',
-    description: '智能匹配关键词，自动回复买家消息',
-    color: 'var(--color-warning)'
-  },
-  {
-    icon: '📊',
-    title: '数据统计',
-    description: '实时查看商品、订单、消息等数据统计',
-    color: 'var(--color-danger)'
-  },
-  {
-    icon: '🔄',
-    title: 'Token自动刷新',
-    description: '智能维护登录状态，无需频繁重新登录',
-    color: 'var(--text-tertiary)'
-  },
-  {
-    icon: '📜',
-    title: '操作日志',
-    description: '详细记录所有操作，方便追踪和排查',
-    color: 'var(--text-secondary)'
-  }
+// 快捷菜单
+const quickMenus = [
+  { icon: '👤', title: '某鱼账号', route: '/accounts' },
+  { icon: '🔗', title: '连接管理', route: '/connection' },
+  { icon: '📦', title: '商品管理', route: '/goods' },
+  { icon: '📋', title: '订单管理', route: '/orders' },
+  { icon: '💬', title: '消息管理', route: '/messages' },
+  { icon: '🤖', title: '自动发货', route: '/auto-delivery' },
+  { icon: '💭', title: '自动回复', route: '/auto-reply' },
+  { icon: '📝', title: '操作记录', route: '/records' }
 ];
 
 // 常见问题
@@ -192,11 +164,33 @@ const selectStep = (index: number) => {
       </el-col>
     </el-row>
 
+    <!-- 快捷入口 -->
+    <el-card class="quick-card" shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span class="card-title">🚀 快捷入口</span>
+          <span class="card-subtitle">快速访问常用功能</span>
+        </div>
+      </template>
+
+      <div class="quick-menu-grid">
+        <div
+          v-for="(menu, index) in quickMenus"
+          :key="index"
+          class="quick-menu-item"
+          @click="navigateTo(menu.route)"
+        >
+          <span class="quick-menu-icon">{{ menu.icon }}</span>
+          <span class="quick-menu-text">{{ menu.title }}</span>
+        </div>
+      </div>
+    </el-card>
+
     <!-- 快速开始指南 -->
     <el-card class="guide-card" shadow="never">
       <template #header>
         <div class="card-header">
-          <span class="card-title">🚀 快速开始指南</span>
+          <span class="card-title">🚀 快速指南</span>
           <span class="card-subtitle">4步完成系统配置，开启自动化之旅</span>
         </div>
       </template>
@@ -243,28 +237,6 @@ const selectStep = (index: number) => {
           </el-timeline-item>
         </el-timeline>
       </div>
-    </el-card>
-
-    <!-- 功能特性 -->
-    <el-card class="features-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">✨ 功能特性</span>
-          <span class="card-subtitle">强大的自动化功能，提升您的工作效率</span>
-        </div>
-      </template>
-
-      <el-row :gutter="20">
-        <el-col :span="8" v-for="(feature, index) in features" :key="index">
-          <el-card shadow="hover" class="feature-card">
-            <div class="feature-icon" :style="{ color: feature.color }">
-              {{ feature.icon }}
-            </div>
-            <h3 class="feature-title">{{ feature.title }}</h3>
-            <p class="feature-description">{{ feature.description }}</p>
-          </el-card>
-        </el-col>
-      </el-row>
     </el-card>
 
     <!-- 常见问题 -->

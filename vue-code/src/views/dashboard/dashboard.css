@@ -183,48 +183,54 @@
   width: 100%;
 }
 
-/* 功能特性 */
-.features-card {
+/* 快捷入口 */
+.quick-card {
   margin-bottom: 20px;
   border-radius: 12px;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+.quick-menu-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.feature-item {
-  padding: 20px;
-  border-radius: 12px;
+.quick-menu-item {
+  flex: 1;
+  min-width: 80px;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  border-radius: 10px;
   background: var(--bg-surface);
-  transition: all 0.3s ease;
   border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.feature-item:hover {
-  transform: translateY(-4px);
+.quick-menu-item:hover {
+  transform: translateY(-2px);
   box-shadow: 0 4px 12px var(--shadow-md);
   border-color: var(--theme-primary);
+  background: color-mix(in srgb, var(--theme-primary) 5%, var(--bg-surface));
 }
 
-.feature-icon {
-  font-size: 32px;
-  margin-bottom: 12px;
-}
-
-.feature-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
+.quick-menu-icon {
+  font-size: 28px;
   margin-bottom: 8px;
 }
 
-.feature-description {
-  font-size: 14px;
+.quick-menu-text {
+  font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.6;
+  text-align: center;
+}
+
+.quick-menu-item:hover .quick-menu-text {
+  color: var(--text-primary);
 }
 
 /* 常见问题 */

@@ -118,4 +118,22 @@ public interface XianyuChatMessageMapper {
     int countMessages(@Param("accountId") Long accountId,
                      @Param("xyGoodsId") String xyGoodsId,
                      @Param("senderUserId") String senderUserId);
+
+    /**
+     * 根据会话ID查询买家名称（排除指定用户ID，取最近一条包含用户名的消息）
+     *
+     * @param sId 会话ID
+     * @param excludeUserId 排除的用户ID（通常是卖家自己）
+     * @return 包含买家用户名的消息
+     */
+    @Select("SELECT * FROM xianyu_chat_message " +
+            "WHERE s_id = #{sId} " +
+            "AND sender_user_id != #{excludeUserId} " +
+            "AND sender_user_name IS NOT NULL " +
+            "AND sender_user_name != '' " +
+            "AND sender_user_name != '交易消息' " +
+            "ORDER BY message_time DESC " +
+            "LIMIT 1")
+    XianyuChatMessage findBuyerNameBySId(@Param("sId") String sId,
+                                         @Param("excludeUserId") String excludeUserId);
 }

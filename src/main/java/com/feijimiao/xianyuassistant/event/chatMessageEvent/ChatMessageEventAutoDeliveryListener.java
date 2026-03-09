@@ -6,6 +6,7 @@ import com.feijimiao.xianyuassistant.entity.XianyuGoodsAutoDeliveryConfig;
 import com.feijimiao.xianyuassistant.entity.XianyuGoodsAutoDeliveryRecord;
 import com.feijimiao.xianyuassistant.entity.XianyuGoodsConfig;
 import com.feijimiao.xianyuassistant.entity.XianyuGoodsInfo;
+import com.feijimiao.xianyuassistant.mapper.XianyuChatMessageMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoDeliveryConfigMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoDeliveryRecordMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsConfigMapper;
@@ -65,6 +66,9 @@ public class ChatMessageEventAutoDeliveryListener {
     
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private XianyuChatMessageMapper chatMessageMapper;
     
     /**
      * 处理聊天消息接收事件 - 判断并执行自动发货
@@ -109,9 +113,33 @@ public class ChatMessageEventAutoDeliveryListener {
             
             // 获取买家信息
             String buyerUserName = message.getSenderUserName();
-            
-            log.info("【账号{}】提取买家信息: buyerUserId={}, buyerUserName={}", 
-                    message.getXianyuAccountId(), message.getSenderUserId(), buyerUserName);
+            String buyerUserId = message.getSenderUserId();
+
+            // 如果买家名称为空，从数据库中查询同一会话的历史消息获取买家名称
+            if (buyerUserName == null || buyerUserName.isEmpty() ||
+                "交易消息".equals(buyerUserName) || "你有一条新消息".equals(buyerUserName)) {
+
+                log.info("【账号{}】消息中买家名称为空或为系统消息，尝试从历史消息中获取: sId={}, senderUserId={}",
+                        message.getXianyuAccountId(), message.getSId(), buyerUserId);
+
+                // 从数据库查询同一会话中买家发送的消息（排除系统消息）
+                if (message.getSId() != null && buyerUserId != null) {
+                    XianyuChatMessage buyerMsg = chatMessageMapper.findBuyerNameBySId(
+                            message.getSId(), buyerUserId);
+
+                    if (buyerMsg != null && buyerMsg.getSenderUserName() != null) {
+                        buyerUserName = buyerMsg.getSenderUserName();
+                        log.info("【账号{}】从历史消息中获取到买家名称: buyerUserName={}, 来源消息pnmId={}",
+                                message.getXianyuAccountId(), buyerUserName, buyerMsg.getPnmId());
+                    } else {
+                        log.warn("【账号{}】未能从历史消息中获取买家名称: sId={}",
+                                message.getXianyuAccountId(), message.getSId());
+                    }
+                }
+            }
+
+            log.info("【账号{}】提取买家信息: buyerUserId={}, buyerUserName={}",
+                    message.getXianyuAccountId(), buyerUserId, buyerUserName);
             
             // 根据xy_goods_id查询xianyu_goods表获取表ID
             QueryWrapper<XianyuGoodsInfo> queryWrapper = new QueryWrapper<>();

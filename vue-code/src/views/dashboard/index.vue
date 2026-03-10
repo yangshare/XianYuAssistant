@@ -86,8 +86,7 @@ const quickMenus = [
   { icon: '📋', title: '订单管理', route: '/orders' },
   { icon: '💬', title: '消息管理', route: '/messages' },
   { icon: '🤖', title: '自动发货', route: '/auto-delivery' },
-  { icon: '💭', title: '自动回复', route: '/auto-reply' },
-  { icon: '📝', title: '操作记录', route: '/records' }
+  { icon: '💭', title: '自动回复', route: '/auto-reply' }
 ];
 
 // 常见问题

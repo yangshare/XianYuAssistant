@@ -68,9 +68,6 @@ import AppHeader from './components/AppHeader.vue'
             <span class="group-text">日志记录</span>
           </div>
 
-          <el-menu-item index="/records">
-            <span>📝 操作记录</span>
-          </el-menu-item>
           <el-menu-item index="/operation-log">
             <span>📜 操作日志</span>
           </el-menu-item>

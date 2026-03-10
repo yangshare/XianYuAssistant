@@ -15,7 +15,6 @@ const breadcrumbs = computed(() => {
     '/messages': '消息管理',
     '/auto-delivery': '自动发货',
     '/auto-reply': '自动回复',
-    '/records': '操作记录',
     '/operation-log': '操作日志'
   }
   return pathMap[route.path] || '未知页面'

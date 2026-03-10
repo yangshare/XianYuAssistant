@@ -1,6 +1,7 @@
 package com.feijimiao.xianyuassistant.service.impl;
 
 import com.feijimiao.xianyuassistant.service.AccountService;
+import com.feijimiao.xianyuassistant.service.OperationLogService;
 import com.feijimiao.xianyuassistant.service.WebSocketService;
 import com.feijimiao.xianyuassistant.service.WebSocketTokenService;
 import com.feijimiao.xianyuassistant.utils.XianyuSignUtils;
@@ -27,7 +28,10 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private AccountService accountService;
-    
+
+    @Autowired
+    private OperationLogService operationLogService;
+
     @Autowired
     private WebSocketMessageHandler messageHandler;
     
@@ -240,26 +244,36 @@ public class WebSocketServiceImpl implements WebSocketService {
             
             if (connected) {
                 webSocketClients.put(accountId, client);
-                
+
                 // 执行WebSocket初始化流程（参考Python的init方法）
                 log.info("开始WebSocket初始化流程: accountId={}", accountId);
                 initializer.initialize(client, accessToken, deviceId, String.valueOf(accountId));
-                
+
                 // 启动心跳任务
                 startHeartbeat(accountId, client);
-                
+
                 log.info("WebSocket连接成功: accountId={}", accountId);
-                log.info("连接状态: isOpen={}, isClosed={}", 
+                log.info("连接状态: isOpen={}, isClosed={}",
                         client.isOpen(), client.isClosed());
+
+                operationLogService.log(accountId, "WEBSOCKET_CONNECT",
+                        "WebSocket连接成功", 1);
+
                 return true;
             } else {
                 log.error("WebSocket连接失败: accountId={}", accountId);
-                log.error("连接状态: isOpen={}, isClosed={}", 
+                log.error("连接状态: isOpen={}, isClosed={}",
                         client.isOpen(), client.isClosed());
+
+                operationLogService.log(accountId, "WEBSOCKET_CONNECT",
+                        "WebSocket连接失败 - connectBlocking返回false", 0);
+
                 return false;
             }
         } catch (Exception e) {
             log.error("连接WebSocket异常: accountId={}", accountId, e);
+            operationLogService.log(accountId, "WEBSOCKET_CONNECT",
+                    "WebSocket连接异常: " + e.getMessage(), 0);
             throw e;
         }
     }
@@ -277,6 +291,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (client != null) {
                 client.close();
                 log.info("WebSocket连接已关闭: accountId={}", accountId);
+                operationLogService.log(accountId, "WEBSOCKET_DISCONNECT",
+                        "WebSocket连接已关闭", 1);
                 return true;
             } else {
                 log.warn("WebSocket连接不存在: accountId={}", accountId);
@@ -285,6 +301,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         } catch (Exception e) {
             log.error("停止WebSocket失败: accountId={}", accountId, e);
+            operationLogService.log(accountId, "WEBSOCKET_DISCONNECT",
+                    "WebSocket断开异常: " + e.getMessage(), 0);
             return false;
         }
     }

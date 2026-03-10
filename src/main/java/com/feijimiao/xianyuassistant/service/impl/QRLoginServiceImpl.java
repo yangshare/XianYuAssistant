@@ -3,6 +3,7 @@ package com.feijimiao.xianyuassistant.service.impl;
 import com.feijimiao.xianyuassistant.controller.dto.QRLoginResponse;
 import com.feijimiao.xianyuassistant.controller.dto.QRLoginSession;
 import com.feijimiao.xianyuassistant.controller.dto.QRStatusResponse;
+import com.feijimiao.xianyuassistant.service.OperationLogService;
 import com.feijimiao.xianyuassistant.service.QRLoginService;
 import com.feijimiao.xianyuassistant.utils.CookieUtils;
 import com.google.gson.Gson;
@@ -42,6 +43,9 @@ public class QRLoginServiceImpl implements QRLoginService {
     
     @Autowired
     private com.feijimiao.xianyuassistant.service.AccountService accountService;
+
+    @Autowired
+    private OperationLogService operationLogService;
     
     private static final String HOST = "https://passport.goofish.com";
     private static final String API_MINI_LOGIN = HOST + "/mini_login.htm";
@@ -682,14 +686,29 @@ public class QRLoginServiceImpl implements QRLoginService {
                 log.info("   - Cookie字段数: {}", cookies.size());
                 log.info("   - m_h5_tk: {}", mH5Tk != null ? "已保存" : "未提供");
                 log.info("   - 账号备注: {}", accountNote);
+
+                // 记录操作日志
+                operationLogService.log(accountId, "LOGIN", "ACCOUNT",
+                        "扫码登录成功 - 账号备注: " + accountNote, 1,
+                        "ACCOUNT", String.valueOf(accountId), null, null, null, null);
             } else {
                 log.error("❌ 保存Cookie失败：accountId为空");
                 session.setStatus("error");
+
+                // 记录操作日志 - 登录失败
+                operationLogService.log(null, "LOGIN", "ACCOUNT",
+                        "扫码登录失败 - accountId为空", 0,
+                        "SESSION", session.getSessionId(), null, null, null, null);
             }
-            
+
         } catch (Exception e) {
             log.error("❌ 保存Cookie到数据库失败: sessionId={}", session.getSessionId(), e);
             session.setStatus("error");
+
+            // 记录操作日志 - 登录异常
+            operationLogService.log(null, "LOGIN", "ACCOUNT",
+                    "扫码登录异常: " + e.getMessage(), 0,
+                    "SESSION", session.getSessionId(), null, null, e.getMessage(), null);
         }
     }
     

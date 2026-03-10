@@ -4,6 +4,7 @@ import com.feijimiao.xianyuassistant.entity.XianyuAccount;
 import com.feijimiao.xianyuassistant.entity.XianyuCookie;
 import com.feijimiao.xianyuassistant.mapper.XianyuAccountMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuCookieMapper;
+import com.feijimiao.xianyuassistant.service.OperationLogService;
 import com.feijimiao.xianyuassistant.service.TokenRefreshService;
 import com.feijimiao.xianyuassistant.service.WebSocketTokenService;
 import com.feijimiao.xianyuassistant.utils.XianyuSignUtils;
@@ -46,6 +47,9 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
     
     @Autowired
     private WebSocketTokenService webSocketTokenService;
+
+    @Autowired
+    private OperationLogService operationLogService;
     
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
@@ -148,12 +152,19 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
 
             if (!updated) {
                 log.warn("【账号{}】⚠️ 响应中未包含新的_m_h5_tk", accountId);
+                operationLogService.log(accountId, "TOKEN_REFRESH",
+                        "_m_h5_tk token刷新失败 - 响应中未包含新token", 0);
+            } else {
+                operationLogService.log(accountId, "TOKEN_REFRESH",
+                        "_m_h5_tk token刷新成功", 1);
             }
 
             return updated;
-            
+
         } catch (Exception e) {
             log.error("【账号{}】刷新_m_h5_tk token失败", accountId, e);
+            operationLogService.log(accountId, "TOKEN_REFRESH",
+                    "_m_h5_tk token刷新异常: " + e.getMessage(), 0);
             return false;
         }
     }
@@ -165,20 +176,26 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
     public boolean refreshWebSocketToken(Long accountId) {
         try {
             log.info("【账号{}】开始刷新WebSocket token...", accountId);
-            
+
             // 调用WebSocketTokenService重新获取token
             String newToken = webSocketTokenService.refreshToken(accountId);
-            
+
             if (newToken != null && !newToken.isEmpty()) {
                 log.info("【账号{}】✅ WebSocket token刷新成功", accountId);
+                operationLogService.log(accountId, "COOKIE_UPDATE",
+                        "WebSocket token刷新成功", 1);
                 return true;
             } else {
                 log.warn("【账号{}】⚠️ WebSocket token刷新失败", accountId);
+                operationLogService.log(accountId, "COOKIE_UPDATE",
+                        "WebSocket token刷新失败 - 未获取到新token", 0);
                 return false;
             }
-            
+
         } catch (Exception e) {
             log.error("【账号{}】刷新WebSocket token失败", accountId, e);
+            operationLogService.log(accountId, "COOKIE_UPDATE",
+                    "WebSocket token刷新异常: " + e.getMessage(), 0);
             return false;
         }
     }

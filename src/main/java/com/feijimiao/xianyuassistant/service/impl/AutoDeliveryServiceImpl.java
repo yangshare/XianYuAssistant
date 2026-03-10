@@ -11,6 +11,7 @@ import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoReplyConfigMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoReplyRecordMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsConfigMapper;
 import com.feijimiao.xianyuassistant.service.AutoDeliveryService;
+import com.feijimiao.xianyuassistant.service.OperationLogService;
 import com.feijimiao.xianyuassistant.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
     @Lazy
     @Autowired
     private WebSocketService webSocketService;
+
+    @Autowired
+    private OperationLogService operationLogService;
     
     @Override
     public XianyuGoodsConfig getGoodsConfig(Long accountId, String xyGoodsId) {
@@ -146,17 +150,32 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
             
             // 6. 记录发货结果（传递买家用户ID和用户名）
             recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, content, success ? 1 : 0);
-            
+
             if (success) {
-                log.info("【账号{}】自动发货成功: xyGoodsId={}, buyerUserName={}, content={}", 
+                log.info("【账号{}】自动发货成功: xyGoodsId={}, buyerUserName={}, content={}",
                         accountId, xyGoodsId, buyerUserName, content);
+
+                // 记录操作日志 - 自动发货成功
+                operationLogService.log(accountId, "AUTO_DELIVERY", "ORDER",
+                        "自动发货成功 - 买家: " + buyerUserName + ", 商品ID: " + xyGoodsId, 1,
+                        "GOODS", xyGoodsId, null, content, null, null);
             } else {
                 log.error("【账号{}】自动发货失败: xyGoodsId={}", accountId, xyGoodsId);
+
+                // 记录操作日志 - 自动发货失败
+                operationLogService.log(accountId, "AUTO_DELIVERY", "ORDER",
+                        "自动发货失败 - 买家: " + buyerUserName + ", 商品ID: " + xyGoodsId, 0,
+                        "GOODS", xyGoodsId, null, content, "发送消息失败", null);
             }
-            
+
         } catch (Exception e) {
             log.error("【账号{}】自动发货异常: xyGoodsId={}", accountId, xyGoodsId, e);
             recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, null, 0);
+
+            // 记录操作日志 - 自动发货异常
+            operationLogService.log(accountId, "AUTO_DELIVERY", "ORDER",
+                    "自动发货异常 - 商品ID: " + xyGoodsId, 0,
+                    "GOODS", xyGoodsId, null, null, e.getMessage(), null);
         }
     }
     
@@ -255,16 +274,31 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
             
             // 8. 记录回复结果
             recordAutoReply(accountId, xyGoodsId, buyerMessage, replyContent, matchedKeyword, success ? 1 : 0);
-            
+
             if (success) {
-                log.info("【账号{}】自动回复成功: xyGoodsId={}, keyword={}, reply={}", 
+                log.info("【账号{}】自动回复成功: xyGoodsId={}, keyword={}, reply={}",
                         accountId, xyGoodsId, matchedKeyword, replyContent);
+
+                // 记录操作日志 - 自动回复成功
+                operationLogService.log(accountId, "AUTO_REPLY", "MESSAGE",
+                        "自动回复成功 - 关键词: " + matchedKeyword + ", 商品ID: " + xyGoodsId, 1,
+                        "GOODS", xyGoodsId, buyerMessage, replyContent, null, null);
             } else {
                 log.error("【账号{}】自动回复失败: xyGoodsId={}", accountId, xyGoodsId);
+
+                // 记录操作日志 - 自动回复失败
+                operationLogService.log(accountId, "AUTO_REPLY", "MESSAGE",
+                        "自动回复失败 - 关键词: " + matchedKeyword + ", 商品ID: " + xyGoodsId, 0,
+                        "GOODS", xyGoodsId, buyerMessage, replyContent, "发送消息失败", null);
             }
-            
+
         } catch (Exception e) {
             log.error("【账号{}】自动回复异常: xyGoodsId={}", accountId, xyGoodsId, e);
+
+            // 记录操作日志 - 自动回复异常
+            operationLogService.log(accountId, "AUTO_REPLY", "MESSAGE",
+                    "自动回复异常 - 商品ID: " + xyGoodsId, 0,
+                    "GOODS", xyGoodsId, buyerMessage, null, e.getMessage(), null);
         }
     }
     

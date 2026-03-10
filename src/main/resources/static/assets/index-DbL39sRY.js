@@ -1,1 +1,0 @@
-import{d as s,b as n,j as o,o as t,_ as a}from"./index-C5348st6.js";const _={class:"qrlogin-page"},r=s({__name:"index",setup(p){return(c,e)=>(t(),n("div",_,[...e[0]||(e[0]=[o("h1",null,"扫码登录",-1),o("p",null,"扫码登录功能开发中...",-1)])]))}}),l=a(r,[["__scopeId","data-v-83f57100"]]);export{l as default};

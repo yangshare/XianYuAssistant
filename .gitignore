@@ -45,3 +45,4 @@ vue-code/.pnpm-store/
 
 ### claude code ###
 /.claude/
+/src/main/resources/static/

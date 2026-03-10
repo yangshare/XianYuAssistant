@@ -261,21 +261,6 @@ const selectStep = (index: number) => {
       </el-collapse>
     </el-card>
 
-    <!-- 底部提示 -->
-    <el-card class="tips-card" shadow="never">
-      <el-alert
-        title="💡 温馨提示"
-        type="info"
-        :closable="false"
-      >
-        <ul class="tips-list">
-          <li>系统会自动刷新Token，保持登录状态，无需频繁重新登录</li>
-          <li>建议不要频繁启动/断开连接，避免触发人机验证</li>
-          <li>自动发货和自动回复需要先启动WebSocket连接才能生效</li>
-          <li>所有操作都会记录在"操作日志"中，方便追踪和排查问题</li>
-        </ul>
-      </el-alert>
-    </el-card>
   </div>
 </template>
 

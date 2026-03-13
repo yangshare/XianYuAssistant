@@ -14,11 +14,14 @@ import com.feijimiao.xianyuassistant.controller.dto.ManualAddAccountReqDTO;
 import com.feijimiao.xianyuassistant.controller.dto.UpdateAccountReqDTO;
 import com.feijimiao.xianyuassistant.controller.dto.UpdateAccountRespDTO;
 import com.feijimiao.xianyuassistant.service.AccountService;
+import com.feijimiao.xianyuassistant.utils.AdminAuthUtils;
+import com.feijimiao.xianyuassistant.utils.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 账号管理控制器
@@ -31,7 +34,7 @@ public class AccountController {
 
     @Autowired
     private XianyuAccountMapper accountMapper;
-    
+
     @Autowired
     private AccountService accountService;
 
@@ -92,7 +95,7 @@ public class AccountController {
             }
             
             // 从Cookie中提取unb信息
-            String unb = extractUnbFromCookie(reqDTO.getCookie());
+            String unb = CookieUtils.parseCookies(reqDTO.getCookie()).get("unb");
             if (unb == null || unb.isEmpty()) {
                 return ResultObject.failed("无法从Cookie中提取UNB信息");
             }
@@ -118,28 +121,6 @@ public class AccountController {
             log.error("手动添加账号失败", e);
             return ResultObject.failed("添加账号失败: " + e.getMessage());
         }
-    }
-    
-    /**
-     * 从Cookie字符串中提取UNB值
-     *
-     * @param cookie Cookie字符串
-     * @return UNB值，如果未找到则返回null
-     */
-    private String extractUnbFromCookie(String cookie) {
-        if (cookie == null || cookie.isEmpty()) {
-            return null;
-        }
-        
-        // 查找unb=后面的值
-        String[] cookieParts = cookie.split(";\\s*");
-        for (String part : cookieParts) {
-            if (part.startsWith("unb=")) {
-                return part.substring(4); // "unb=".length() = 4
-            }
-        }
-        
-        return null;
     }
 
     /**
@@ -179,21 +160,30 @@ public class AccountController {
 
     /**
      * 删除账号
+     * 需要管理员权限
      */
     @PostMapping("/delete")
-    public ResultObject<DeleteAccountRespDTO> deleteAccount(@RequestBody DeleteAccountReqDTO reqDTO) {
+    public ResultObject<DeleteAccountRespDTO> deleteAccount(@RequestBody DeleteAccountReqDTO reqDTO,
+                                                            @RequestHeader Map<String, String> headers) {
         try {
             Long id = reqDTO.getAccountId();
             log.info("删除账号请求: accountId={}", id);
-            
+
+            // 权限验证
+            if (!AdminAuthUtils.verifyPermission(headers)) {
+                log.warn("删除账号权限验证失败: accountId={}", id);
+                return ResultObject.failed("权限不足，需要管理员权限");
+            }
+
             XianyuAccount account = accountMapper.selectById(id);
             if (account == null) {
                 return ResultObject.failed("账号不存在");
             }
-            
+
             // 删除账号关联的所有数据
             accountService.deleteAccountAndRelatedData(id);
-            
+            log.info("账号删除成功: accountId={}", id);
+
             DeleteAccountRespDTO respDTO = new DeleteAccountRespDTO();
             respDTO.setMessage("删除成功");
             return ResultObject.success(respDTO);

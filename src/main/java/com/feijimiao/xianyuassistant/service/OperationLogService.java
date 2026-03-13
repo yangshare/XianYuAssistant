@@ -37,4 +37,19 @@ public interface OperationLogService {
      * 删除指定天数之前的日志
      */
     int deleteOldLogs(int days);
+
+    /**
+     * 归档指定天数之前的日志到文件
+     *
+     * @param days 归档多少天前的日志
+     * @return 归档的日志数量
+     */
+    int archiveOldLogs(int days);
+
+    /**
+     * 获取归档文件列表
+     *
+     * @return 归档文件信息列表
+     */
+    List<Map<String, Object>> listArchiveFiles();
 }

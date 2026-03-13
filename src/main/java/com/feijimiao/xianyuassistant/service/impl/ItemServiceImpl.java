@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -21,7 +23,40 @@ import java.util.*;
 @Service
 public class ItemServiceImpl implements ItemService {
 
+    // ==================== 常量定义 ====================
+
+    /** 默认页大小 */
+    private static final int DEFAULT_PAGE_SIZE = 20;
+    /** 最小页数 */
+    private static final int MIN_PAGE_NUM = 1;
+    /** 起始页码 */
+    private static final int FIRST_PAGE_NUM = 1;
+
+    /** Cookie状态：正常 */
+    private static final int COOKIE_STATUS_VALID = 1;
+    /** Cookie状态：过期 */
+    private static final int COOKIE_STATUS_EXPIRED = 2;
+    /** Cookie状态：无效 */
+    private static final int COOKIE_STATUS_INVALID = 3;
+
+    /** 功能开关：关闭 */
+    private static final int FEATURE_DISABLED = 0;
+    /** 功能开关：开启 */
+    private static final int FEATURE_ENABLED = 1;
+
+    /** 闲鱼默认分组ID（在售） */
+    private static final String DEFAULT_GROUP_ID = "58877261";
+    /** 在售分组名称 */
+    private static final String GROUP_NAME_SELLING = "在售";
+
+    /** HTTP状态码：成功 */
+    private static final int HTTP_SUCCESS_CODE = 200;
+
+    // ==================== 常量定义结束 ====================
+
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Autowired
     private com.feijimiao.xianyuassistant.service.AccountService accountService;
@@ -59,8 +94,8 @@ public class ItemServiceImpl implements ItemService {
             dataMap.put("needGroupInfo", false);
             dataMap.put("pageNumber", reqDTO.getPageNumber());
             dataMap.put("pageSize", reqDTO.getPageSize());
-            dataMap.put("groupName", "在售");
-            dataMap.put("groupId", "58877261");
+            dataMap.put("groupName", GROUP_NAME_SELLING);
+            dataMap.put("groupId", DEFAULT_GROUP_ID);
             dataMap.put("defaultGroup", true);
             dataMap.put("userId", cookies.get("unb"));
             
@@ -121,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
                 try {
                     Long accountId = getAccountIdFromCookieId(reqDTO.getCookieId());
                     if (accountId != null) {
-                        accountService.updateCookieStatus(accountId, 2); // 2表示过期
+                        accountService.updateCookieStatus(accountId, COOKIE_STATUS_EXPIRED);
                         log.info("已更新Cookie状态为过期: accountId={}", accountId);
                     }
                 } catch (Exception ex) {
@@ -160,9 +195,9 @@ public class ItemServiceImpl implements ItemService {
             RefreshItemsRespDTO respDTO = new RefreshItemsRespDTO();
             respDTO.setSuccess(false);
             respDTO.setUpdatedItemIds(new ArrayList<>());
-            
+
             List<ItemDTO> allItems = new ArrayList<>();
-            int pageNumber = 1;
+            int pageNumber = FIRST_PAGE_NUM;
 
             // 自动分页获取所有商品
             while (true) {
@@ -180,7 +215,7 @@ public class ItemServiceImpl implements ItemService {
 
                 ResultObject<ItemListRespDTO> pageResult = getItemList(pageReqDTO);
                 
-                if (pageResult.getCode() != 200 || pageResult.getData() == null || !pageResult.getData().getSuccess()) {
+                if (pageResult.getCode() != HTTP_SUCCESS_CODE || pageResult.getData() == null || !pageResult.getData().getSuccess()) {
                     log.error("获取第{}页失败", pageNumber);
                     // 如果是第一页就失败了，返回错误
                     if (pageNumber == 1) {
@@ -264,20 +299,20 @@ public class ItemServiceImpl implements ItemService {
             
             // 计算分页信息
             int totalCount = allItems != null ? allItems.size() : 0;
-            int pageSize = reqDTO.getPageSize() != null ? reqDTO.getPageSize() : 20;
+            int pageSize = reqDTO.getPageSize() != null ? reqDTO.getPageSize() : DEFAULT_PAGE_SIZE;
             int pageNum = reqDTO.getPageNum() != null ? reqDTO.getPageNum() : 1;
             
             // 确保页码有效
-            if (pageNum < 1) {
-                pageNum = 1;
+            if (pageNum < MIN_PAGE_NUM) {
+                pageNum = MIN_PAGE_NUM;
             }
             
             // 计算总页数
             int totalPage = (int) Math.ceil((double) totalCount / pageSize);
             
-            // 如果总页数为0，设置为1
+            // 如果总页数为0，设置为最小页数
             if (totalPage == 0) {
-                totalPage = 1;
+                totalPage = MIN_PAGE_NUM;
             }
             
             // 确保页码不超过总页数
@@ -785,13 +820,13 @@ public class ItemServiceImpl implements ItemService {
                 goodsConfig.setXianyuAccountId(reqDTO.getXianyuAccountId());
                 goodsConfig.setXyGoodsId(reqDTO.getXyGoodsId());
                 goodsConfig.setXianyuAutoDeliveryOn(reqDTO.getXianyuAutoDeliveryOn());
-                goodsConfig.setXianyuAutoReplyOn(0); // 默认关闭自动回复
-                goodsConfig.setCreateTime(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
+                goodsConfig.setXianyuAutoReplyOn(FEATURE_DISABLED); // 默认关闭自动回复
+                goodsConfig.setCreateTime(LocalDateTime.now().format(DATE_TIME_FORMATTER));
                 goodsConfig.setUpdateTime(goodsConfig.getCreateTime());
             } else {
                 // 3. 更新配置
                 goodsConfig.setXianyuAutoDeliveryOn(reqDTO.getXianyuAutoDeliveryOn());
-                goodsConfig.setUpdateTime(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
+                goodsConfig.setUpdateTime(LocalDateTime.now().format(DATE_TIME_FORMATTER));
             }
             
             // 4. 保存配置
@@ -828,14 +863,14 @@ public class ItemServiceImpl implements ItemService {
                 goodsConfig = new com.feijimiao.xianyuassistant.entity.XianyuGoodsConfig();
                 goodsConfig.setXianyuAccountId(reqDTO.getXianyuAccountId());
                 goodsConfig.setXyGoodsId(reqDTO.getXyGoodsId());
-                goodsConfig.setXianyuAutoDeliveryOn(0); // 默认关闭自动发货
+                goodsConfig.setXianyuAutoDeliveryOn(FEATURE_DISABLED); // 默认关闭自动发货
                 goodsConfig.setXianyuAutoReplyOn(reqDTO.getXianyuAutoReplyOn());
-                goodsConfig.setCreateTime(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
+                goodsConfig.setCreateTime(LocalDateTime.now().format(DATE_TIME_FORMATTER));
                 goodsConfig.setUpdateTime(goodsConfig.getCreateTime());
             } else {
                 // 3. 更新配置
                 goodsConfig.setXianyuAutoReplyOn(reqDTO.getXianyuAutoReplyOn());
-                goodsConfig.setUpdateTime(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
+                goodsConfig.setUpdateTime(LocalDateTime.now().format(DATE_TIME_FORMATTER));
             }
             
             // 4. 保存配置

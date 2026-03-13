@@ -2,6 +2,7 @@ package com.feijimiao.xianyuassistant.controller;
 
 import com.feijimiao.xianyuassistant.common.ResultObject;
 import com.feijimiao.xianyuassistant.service.OperationLogService;
+import com.feijimiao.xianyuassistant.utils.AdminAuthUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +18,28 @@ import java.util.Map;
 @RequestMapping("/api/operation-log")
 @CrossOrigin(origins = "*")
 public class OperationLogController {
-    
+
     @Autowired
     private OperationLogService operationLogService;
-    
+
     /**
      * 查询操作记录
+     * 需要管理员权限
      */
     @PostMapping("/query")
-    public ResultObject<Map<String, Object>> queryLogs(@RequestBody QueryLogsReqDTO reqDTO) {
+    public ResultObject<Map<String, Object>> queryLogs(@RequestBody QueryLogsReqDTO reqDTO,
+                                                       @RequestHeader java.util.Map<String, String> headers) {
         try {
             log.info("查询操作记录: accountId={}, type={}, module={}, status={}, page={}, pageSize={}",
                     reqDTO.getAccountId(), reqDTO.getOperationType(), reqDTO.getOperationModule(),
                     reqDTO.getOperationStatus(), reqDTO.getPage(), reqDTO.getPageSize());
-            
+
+            // 权限验证
+            if (!AdminAuthUtils.verifyPermission(headers)) {
+                log.warn("查询操作记录权限验证失败");
+                return ResultObject.failed("权限不足，需要管理员权限");
+            }
+
             if (reqDTO.getAccountId() == null) {
                 return ResultObject.failed("账号ID不能为空");
             }
@@ -62,12 +71,20 @@ public class OperationLogController {
     
     /**
      * 删除旧日志
+     * 需要管理员权限
      */
     @PostMapping("/deleteOld")
-    public ResultObject<Integer> deleteOldLogs(@RequestBody DeleteOldLogsReqDTO reqDTO) {
+    public ResultObject<Integer> deleteOldLogs(@RequestBody DeleteOldLogsReqDTO reqDTO,
+                                                @RequestHeader java.util.Map<String, String> headers) {
         try {
             log.info("删除旧操作记录: days={}", reqDTO.getDays());
-            
+
+            // 权限验证
+            if (!AdminAuthUtils.verifyPermission(headers)) {
+                log.warn("删除旧操作记录权限验证失败");
+                return ResultObject.failed("权限不足，需要管理员权限");
+            }
+
             if (reqDTO.getDays() == null || reqDTO.getDays() < 1) {
                 return ResultObject.failed("天数必须大于0");
             }

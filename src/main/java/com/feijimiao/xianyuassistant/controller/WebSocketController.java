@@ -5,6 +5,8 @@ import com.feijimiao.xianyuassistant.entity.XianyuAccount;
 import com.feijimiao.xianyuassistant.controller.dto.UpdateCookieReqDTO;
 import com.feijimiao.xianyuassistant.controller.dto.UpdateCookieRespDTO;
 import com.feijimiao.xianyuassistant.service.WebSocketService;
+import com.feijimiao.xianyuassistant.utils.AesEncryptUtils;
+import com.feijimiao.xianyuassistant.utils.CookieUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,12 @@ public class WebSocketController {
 
     @Autowired
     private WebSocketService webSocketService;
-    
+
     @Autowired
     private org.springframework.context.ApplicationContext applicationContext;
+
+    @Autowired
+    private AesEncryptUtils aesEncryptUtils;
     
     @Autowired
     private com.feijimiao.xianyuassistant.service.TokenRefreshService tokenRefreshService;
@@ -120,8 +125,9 @@ public class WebSocketController {
                 return "WebSocket连接启动失败：Cookie已失效，请重新获取Cookie";
             }
             
-            // 检查Cookie文本是否为空
-            if (cookie.getCookieText() == null || cookie.getCookieText().trim().isEmpty()) {
+            // 检查Cookie文本是否为空（解密后检查）
+            String decryptedCookieText = aesEncryptUtils.decrypt(cookie.getCookieText());
+            if (decryptedCookieText == null || decryptedCookieText.trim().isEmpty()) {
                 return "WebSocket连接启动失败：Cookie内容为空，请重新配置Cookie";
             }
             
@@ -257,7 +263,9 @@ public class WebSocketController {
             
             if (cookie != null) {
                 respDTO.setCookieStatus(cookie.getCookieStatus());
-                respDTO.setCookieText(cookie.getCookieText());
+                // 解密Cookie内容后返回
+                String decryptedCookieText = aesEncryptUtils.decrypt(cookie.getCookieText());
+                respDTO.setCookieText(decryptedCookieText);
                 respDTO.setWebsocketToken(cookie.getWebsocketToken());
                 respDTO.setTokenExpireTime(cookie.getTokenExpireTime());
             } else {
@@ -325,7 +333,7 @@ public class WebSocketController {
             }
             
             // 从Cookie中提取UNB
-            String unb = extractUnbFromCookie(reqDTO.getCookieText());
+            String unb = CookieUtils.parseCookies(reqDTO.getCookieText()).get("unb");
             if (unb == null || unb.isEmpty()) {
                 return ResultObject.failed("无法从Cookie中提取UNB信息，请确保Cookie包含unb字段");
             }
@@ -420,27 +428,11 @@ public class WebSocketController {
             
             log.info("【账号{}】✅ WebSocket Token手动更新成功", reqDTO.getXianyuAccountId());
             return ResultObject.success("Token更新成功");
-            
+
         } catch (Exception e) {
             log.error("手动更新Token异常: xianyuAccountId={}", reqDTO.getXianyuAccountId(), e);
             return ResultObject.failed("更新Token异常: " + e.getMessage());
         }
-    }
-
-    private String extractUnbFromCookie(String cookie) {
-        if (cookie == null || cookie.isEmpty()) {
-            return null;
-        }
-        
-        // 查找unb=后面的值
-        String[] cookieParts = cookie.split(";\\s*");
-        for (String part : cookieParts) {
-            if (part.startsWith("unb=")) {
-                return part.substring(4); // "unb=".length() = 4
-            }
-        }
-        
-        return null;
     }
 
     /**

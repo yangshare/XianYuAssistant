@@ -17,6 +17,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -25,10 +26,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import jakarta.annotation.PreDestroy;
 
 /**
  * 二维码登录服务实现
@@ -36,16 +38,33 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 public class QRLoginServiceImpl implements QRLoginService {
-    
-    private final Map<String, QRLoginSession> sessions = new ConcurrentHashMap<>();
+
     private final OkHttpClient httpClient;
     private final Gson gson = new Gson();
-    
+
+    // 线程池用于执行二维码状态监控任务
+    private final java.util.concurrent.ExecutorService monitorExecutor = java.util.concurrent.Executors.newCachedThreadPool(
+        r -> {
+            Thread t = new Thread(r);
+            t.setName("qr-monitor-" + t.getId());
+            t.setDaemon(true);
+            return t;
+        }
+    );
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     @Autowired
     private com.feijimiao.xianyuassistant.service.AccountService accountService;
 
     @Autowired
     private OperationLogService operationLogService;
+
+    // Redis key前缀
+    private static final String SESSION_KEY_PREFIX = "qrlogin:session:";
+    // 会话过期时间：30分钟
+    private static final long SESSION_EXPIRE_MINUTES = 30;
     
     private static final String HOST = "https://passport.goofish.com";
     private static final String API_MINI_LOGIN = HOST + "/mini_login.htm";
@@ -83,7 +102,74 @@ public class QRLoginServiceImpl implements QRLoginService {
                 .build();
     }
 
-    
+    // ==================== Redis 会话操作 ====================
+
+    /**
+     * 获取Redis中的会话key
+     */
+    private String getSessionKey(String sessionId) {
+        return SESSION_KEY_PREFIX + sessionId;
+    }
+
+    /**
+     * 从Redis获取会话
+     */
+    private QRLoginSession getSessionFromRedis(String sessionId) {
+        try {
+            String key = getSessionKey(sessionId);
+            String json = redisTemplate.opsForValue().get(key);
+            if (json != null) {
+                QRLoginSession session = gson.fromJson(json, QRLoginSession.class);
+                // 刷新过期时间
+                redisTemplate.expire(key, SESSION_EXPIRE_MINUTES, TimeUnit.MINUTES);
+                return session;
+            }
+        } catch (Exception e) {
+            log.error("从Redis获取会话失败: sessionId={}", sessionId, e);
+        }
+        return null;
+    }
+
+    /**
+     * 保存会话到Redis
+     */
+    private void saveSessionToRedis(QRLoginSession session) {
+        try {
+            String key = getSessionKey(session.getSessionId());
+            String json = gson.toJson(session);
+            redisTemplate.opsForValue().set(key, json, SESSION_EXPIRE_MINUTES, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            log.error("保存会话到Redis失败: sessionId={}", session.getSessionId(), e);
+        }
+    }
+
+    /**
+     * 删除Redis中的会话
+     */
+    private void removeSessionFromRedis(String sessionId) {
+        try {
+            String key = getSessionKey(sessionId);
+            redisTemplate.delete(key);
+        } catch (Exception e) {
+            log.error("删除Redis会话失败: sessionId={}", sessionId, e);
+        }
+    }
+
+    /**
+     * 检查会话是否存在
+     */
+    private boolean hasSessionInRedis(String sessionId) {
+        try {
+            String key = getSessionKey(sessionId);
+            return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+        } catch (Exception e) {
+            log.error("检查Redis会话失败: sessionId={}", sessionId, e);
+            return false;
+        }
+    }
+
+    // ==================== Redis 会话操作结束 ====================
+
     /**
      * 获取_m_h5_tk token
      * 这个token是某鱼API调用必需的，用于签名验证
@@ -323,12 +409,12 @@ public class QRLoginServiceImpl implements QRLoginService {
                         String qrDataUrl = generateQRCodeImage(qrContent);
                         session.setQrCodeUrl(qrDataUrl);
                         session.setStatus("waiting");
-                        
-                        // 保存会话
-                        sessions.put(sessionId, session);
-                        
-                        // 启动状态监控
-                        new Thread(() -> monitorQRStatus(sessionId)).start();
+
+                        // 保存会话到Redis
+                        saveSessionToRedis(session);
+
+                        // 启动状态监控（使用线程池）
+                        monitorExecutor.submit(() -> monitorQRStatus(sessionId));
                         
                         log.info("二维码生成成功: {}", sessionId);
                         return new QRLoginResponse(true, sessionId, qrDataUrl, null);
@@ -394,26 +480,35 @@ public class QRLoginServiceImpl implements QRLoginService {
      */
     private void monitorQRStatus(String sessionId) {
         try {
-            QRLoginSession session = sessions.get(sessionId);
+            QRLoginSession session = getSessionFromRedis(sessionId);
             if (session == null) {
+                log.warn("监控会话不存在: {}", sessionId);
                 return;
             }
-            
+
             log.info("开始监控二维码状态: {}", sessionId);
-            
+
             long maxWaitTime = 300000; // 5分钟
             long startTime = System.currentTimeMillis();
-            
+
             while (System.currentTimeMillis() - startTime < maxWaitTime) {
                 try {
-                    // 检查会话是否还存在
-                    if (!sessions.containsKey(sessionId)) {
+                    // 检查会话是否还存在（从Redis重新获取以获取最新状态）
+                    session = getSessionFromRedis(sessionId);
+                    if (session == null) {
+                        log.info("会话已不存在，停止监控: {}", sessionId);
                         break;
                     }
-                    
+
                     // 轮询二维码状态
                     String qrCodeStatus = pollQRCodeStatus(session);
-                    
+
+                    // pollQRCodeStatus可能修改了session状态，保存回Redis
+                    if ("CONFIRMED".equals(qrCodeStatus) || "success".equals(session.getStatus())
+                            || "verification_required".equals(session.getStatus())) {
+                        saveSessionToRedis(session);
+                    }
+
                     if ("CONFIRMED".equals(qrCodeStatus)) {
                         // 登录确认
                         log.info("扫码登录成功: {}, UNB: {}", sessionId, session.getUnb());
@@ -423,40 +518,46 @@ public class QRLoginServiceImpl implements QRLoginService {
                     } else if ("EXPIRED".equals(qrCodeStatus)) {
                         // 二维码已过期
                         session.setStatus("expired");
+                        saveSessionToRedis(session);
                         log.info("二维码已过期: {}", sessionId);
                         break;
                     } else if ("SCANED".equals(qrCodeStatus)) {
                         // 二维码已被扫描，等待确认
                         if ("waiting".equals(session.getStatus())) {
                             session.setStatus("scanned");
+                            saveSessionToRedis(session);
                             log.info("二维码已扫描，等待确认: {}", sessionId);
                         }
                     } else {
                         // 用户取消确认
                         session.setStatus("cancelled");
+                        saveSessionToRedis(session);
                         log.info("用户取消登录: {}", sessionId);
                         break;
                     }
-                    
+
                     Thread.sleep(800); // 每0.8秒检查一次
-                    
+
                 } catch (Exception e) {
                     log.error("监控二维码状态异常", e);
                     Thread.sleep(2000);
                 }
             }
-            
+
             // 超时处理
+            session = getSessionFromRedis(sessionId);
             if (session != null && !Arrays.asList("success", "expired", "cancelled", "verification_required").contains(session.getStatus())) {
                 session.setStatus("expired");
+                saveSessionToRedis(session);
                 log.info("二维码监控超时，标记为过期: {}", sessionId);
             }
-            
+
         } catch (Exception e) {
             log.error("监控二维码状态失败", e);
-            QRLoginSession session = sessions.get(sessionId);
+            QRLoginSession session = getSessionFromRedis(sessionId);
             if (session != null) {
                 session.setStatus("expired");
+                saveSessionToRedis(session);
             }
         }
     }
@@ -543,16 +644,17 @@ public class QRLoginServiceImpl implements QRLoginService {
     @Override
     public QRStatusResponse getSessionStatus(String sessionId) {
         QRStatusResponse response = new QRStatusResponse();
-        QRLoginSession session = sessions.get(sessionId);
-        
+        QRLoginSession session = getSessionFromRedis(sessionId);
+
         if (session == null) {
             response.setStatus("not_found");
             response.setMessage("会话不存在或已过期");
             return response;
         }
-        
+
         if (session.isExpired() && !"success".equals(session.getStatus())) {
             session.setStatus("expired");
+            saveSessionToRedis(session);
         }
         
         // 转换后端状态为前端期望的状态
@@ -619,7 +721,7 @@ public class QRLoginServiceImpl implements QRLoginService {
     
     @Override
     public Map<String, String> getSessionCookies(String sessionId) {
-        QRLoginSession session = sessions.get(sessionId);
+        QRLoginSession session = getSessionFromRedis(sessionId);
         if (session != null && "success".equals(session.getStatus())) {
             Map<String, String> result = new HashMap<>();
             result.put("cookies", CookieUtils.formatCookies(session.getCookies()));
@@ -628,20 +730,12 @@ public class QRLoginServiceImpl implements QRLoginService {
         }
         return null;
     }
-    
+
     @Override
     public void cleanupExpiredSessions() {
-        List<String> expiredSessions = new ArrayList<>();
-        sessions.forEach((sessionId, session) -> {
-            if (session.isExpired()) {
-                expiredSessions.add(sessionId);
-            }
-        });
-        
-        expiredSessions.forEach(sessionId -> {
-            sessions.remove(sessionId);
-            log.info("清理过期会话: {}", sessionId);
-        });
+        // Redis自动过期，无需手动清理
+        // 此方法保留用于兼容性
+        log.debug("Redis自动管理会话过期，无需手动清理");
     }
     
     /**
@@ -720,7 +814,7 @@ public class QRLoginServiceImpl implements QRLoginService {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] hash = md.digest(input.getBytes());
             StringBuilder hexString = new StringBuilder();
-            
+
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
                 if (hex.length() == 1) {
@@ -728,11 +822,40 @@ public class QRLoginServiceImpl implements QRLoginService {
                 }
                 hexString.append(hex);
             }
-            
+
             return hexString.toString();
         } catch (Exception e) {
             log.error("MD5加密失败", e);
             return "";
+        }
+    }
+
+    /**
+     * 应用关闭时清理资源
+     */
+    @PreDestroy
+    public void shutdown() {
+        log.info("关闭二维码登录服务，清理资源...");
+
+        // 关闭线程池
+        if (monitorExecutor != null && !monitorExecutor.isShutdown()) {
+            monitorExecutor.shutdown();
+            try {
+                if (!monitorExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    monitorExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                monitorExecutor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+            log.info("线程池已关闭");
+        }
+
+        // 关闭HTTP客户端
+        if (httpClient != null) {
+            httpClient.dispatcher().executorService().shutdown();
+            httpClient.connectionPool().evictAll();
+            log.info("HTTP客户端已关闭");
         }
     }
 }

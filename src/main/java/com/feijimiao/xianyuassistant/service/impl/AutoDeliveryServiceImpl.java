@@ -18,8 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.feijimiao.xianyuassistant.utils.XssFilterUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -28,7 +33,34 @@ import java.util.regex.Pattern;
 @Slf4j
 @Service
 public class AutoDeliveryServiceImpl implements AutoDeliveryService {
-    
+
+    // ==================== 常量定义 ====================
+
+    /** 自动发货开启状态 */
+    private static final int AUTO_DELIVERY_ENABLED = 1;
+    /** 自动回复开启状态 */
+    private static final int AUTO_REPLY_ENABLED = 1;
+
+    /** 关键词匹配类型：包含匹配 */
+    private static final int MATCH_TYPE_CONTAINS = 1;
+    /** 关键词匹配类型：完全匹配 */
+    private static final int MATCH_TYPE_EXACT = 2;
+    /** 关键词匹配类型：正则匹配 */
+    private static final int MATCH_TYPE_REGEX = 3;
+
+    /** 发货记录状态：成功 */
+    private static final int DELIVERY_STATUS_SUCCESS = 1;
+    /** 发货记录状态：失败 */
+    private static final int DELIVERY_STATUS_FAILED = 0;
+
+    // ==================== 常量定义结束 ====================
+
+    // 幂等性检查：已处理的消息ID集合（防止重复发货/回复）
+    // 使用ConcurrentHashMap.newKeySet()保证线程安全
+    // 实际生产环境建议使用Redis，设置过期时间
+    private final Set<String> processedDeliveryMessages = ConcurrentHashMap.newKeySet();
+    private final Set<String> processedReplyMessages = ConcurrentHashMap.newKeySet();
+
     @Autowired
     private XianyuGoodsConfigMapper goodsConfigMapper;
     
@@ -50,7 +82,44 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
 
     @Autowired
     private OperationLogService operationLogService;
-    
+
+    // ==================== 幂等性检查方法 ====================
+
+    /**
+     * 生成自动发货幂等性键
+     * 格式: accountId:buyerUserId:sId
+     */
+    private String generateDeliveryKey(Long accountId, String buyerUserId, String sId) {
+        return accountId + ":" + buyerUserId + ":" + sId;
+    }
+
+    /**
+     * 生成自动回复幂等性键
+     * 格式: accountId:buyerUserId:sId:messageHash
+     */
+    private String generateReplyKey(Long accountId, String buyerUserId, String sId, String message) {
+        int messageHash = message != null ? message.hashCode() : 0;
+        return accountId + ":" + buyerUserId + ":" + sId + ":" + messageHash;
+    }
+
+    /**
+     * 检查是否已处理过该发货消息
+     */
+    private boolean isDeliveryProcessed(Long accountId, String buyerUserId, String sId) {
+        String key = generateDeliveryKey(accountId, buyerUserId, sId);
+        return !processedDeliveryMessages.add(key);
+    }
+
+    /**
+     * 检查是否已处理过该回复消息
+     */
+    private boolean isReplyProcessed(Long accountId, String buyerUserId, String sId, String message) {
+        String key = generateReplyKey(accountId, buyerUserId, sId, message);
+        return !processedReplyMessages.add(key);
+    }
+
+    // ==================== 幂等性检查方法结束 ====================
+
     @Override
     public XianyuGoodsConfig getGoodsConfig(Long accountId, String xyGoodsId) {
         return goodsConfigMapper.selectByAccountAndGoodsId(accountId, xyGoodsId);
@@ -76,9 +145,16 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
     
     @Override
     public void saveOrUpdateAutoDeliveryConfig(XianyuGoodsAutoDeliveryConfig config) {
+        // XSS过滤：清理自动发货内容中的恶意脚本
+        if (config.getAutoDeliveryContent() != null) {
+            String filteredContent = XssFilterUtils.filter(config.getAutoDeliveryContent());
+            config.setAutoDeliveryContent(filteredContent);
+            log.debug("自动发货内容XSS过滤完成");
+        }
+
         XianyuGoodsAutoDeliveryConfig existing = autoDeliveryConfigMapper.findByAccountIdAndGoodsId(
                 config.getXianyuAccountId(), config.getXyGoodsId());
-        
+
         if (existing == null) {
             autoDeliveryConfigMapper.insert(config);
         } else {
@@ -106,31 +182,37 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
     @Override
     public void handleAutoDelivery(Long accountId, String xyGoodsId, String sId, String buyerUserId, String buyerUserName) {
         try {
-            log.info("【账号{}】处理自动发货: xyGoodsId={}, sId={}, buyerUserId={}, buyerUserName={}", 
+            log.info("【账号{}】处理自动发货: xyGoodsId={}, sId={}, buyerUserId={}, buyerUserName={}",
                     accountId, xyGoodsId, sId, buyerUserId, buyerUserName);
-            
+
+            // 幂等性检查：检查是否已处理过该发货消息
+            if (isDeliveryProcessed(accountId, buyerUserId, sId)) {
+                log.info("【账号{}】自动发货已处理过，跳过: xyGoodsId={}, buyerUserId={}", accountId, xyGoodsId, buyerUserId);
+                return;
+            }
+
             // 1. 检查商品是否开启自动发货
             XianyuGoodsConfig goodsConfig = getGoodsConfig(accountId, xyGoodsId);
-            if (goodsConfig == null || goodsConfig.getXianyuAutoDeliveryOn() != 1) {
+            if (goodsConfig == null || goodsConfig.getXianyuAutoDeliveryOn() != AUTO_DELIVERY_ENABLED) {
                 log.info("【账号{}】商品未开启自动发货: xyGoodsId={}", accountId, xyGoodsId);
                 return;
             }
             
             // 2. 获取自动发货配置
             XianyuGoodsAutoDeliveryConfig deliveryConfig = getAutoDeliveryConfig(accountId, xyGoodsId);
-            if (deliveryConfig == null || deliveryConfig.getAutoDeliveryContent() == null || 
+            if (deliveryConfig == null || deliveryConfig.getAutoDeliveryContent() == null ||
                     deliveryConfig.getAutoDeliveryContent().isEmpty()) {
                 log.warn("【账号{}】商品未配置自动发货内容: xyGoodsId={}", accountId, xyGoodsId);
-                recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, null, 0);
+                recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, null, DELIVERY_STATUS_FAILED);
                 return;
             }
             
             String content = deliveryConfig.getAutoDeliveryContent();
             log.info("【账号{}】准备发送自动发货消息: content={}", accountId, content);
-            
+
             // 3. 模拟人工操作：阅读消息 + 思考 + 打字延迟
             log.info("【账号{}】模拟人工操作延迟...", accountId);
-            
+
             // 3.1 阅读买家消息的延迟（1-3秒）
             com.feijimiao.xianyuassistant.utils.HumanLikeDelayUtils.mediumDelay();
             
@@ -149,7 +231,7 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
             boolean success = webSocketService.sendMessage(accountId, cid, toId, content);
             
             // 6. 记录发货结果（传递买家用户ID和用户名）
-            recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, content, success ? 1 : 0);
+            recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, content, success ? DELIVERY_STATUS_SUCCESS : DELIVERY_STATUS_FAILED);
 
             if (success) {
                 log.info("【账号{}】自动发货成功: xyGoodsId={}, buyerUserName={}, content={}",
@@ -170,7 +252,7 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
 
         } catch (Exception e) {
             log.error("【账号{}】自动发货异常: xyGoodsId={}", accountId, xyGoodsId, e);
-            recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, null, 0);
+            recordAutoDelivery(accountId, xyGoodsId, buyerUserId, buyerUserName, null, DELIVERY_STATUS_FAILED);
 
             // 记录操作日志 - 自动发货异常
             operationLogService.log(accountId, "AUTO_DELIVERY", "ORDER",
@@ -182,12 +264,20 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
     @Override
     public void handleAutoReply(Long accountId, String xyGoodsId, String sId, String buyerMessage) {
         try {
-            log.info("【账号{}】处理自动回复: xyGoodsId={}, sId={}, buyerMessage={}", 
+            log.info("【账号{}】处理自动回复: xyGoodsId={}, sId={}, buyerMessage={}",
                     accountId, xyGoodsId, sId, buyerMessage);
-            
+
+            // 幂等性检查：检查是否已处理过该回复消息
+            // 从sId提取买家ID（sId格式: "userId@goofish"）
+            String buyerUserId = sId.replace("@goofish", "");
+            if (isReplyProcessed(accountId, buyerUserId, sId, buyerMessage)) {
+                log.info("【账号{}】自动回复已处理过，跳过: xyGoodsId={}, buyerUserId={}", accountId, xyGoodsId, buyerUserId);
+                return;
+            }
+
             // 1. 检查商品是否开启自动回复
             XianyuGoodsConfig goodsConfig = getGoodsConfig(accountId, xyGoodsId);
-            if (goodsConfig == null || goodsConfig.getXianyuAutoReplyOn() != 1) {
+            if (goodsConfig == null || goodsConfig.getXianyuAutoReplyOn() != AUTO_REPLY_ENABLED) {
                 log.info("【账号{}】商品未开启自动回复: xyGoodsId={}", accountId, xyGoodsId);
                 return;
             }
@@ -216,13 +306,13 @@ public class AutoDeliveryServiceImpl implements AutoDeliveryService {
                     boolean matched = false;
                     Integer matchType = config.getMatchType();
                     
-                    if (matchType == null || matchType == 1) {
+                    if (matchType == null || matchType == MATCH_TYPE_CONTAINS) {
                         // 包含匹配
                         matched = buyerMessage.contains(keyword);
-                    } else if (matchType == 2) {
+                    } else if (matchType == MATCH_TYPE_EXACT) {
                         // 完全匹配
                         matched = buyerMessage.equals(keyword);
-                    } else if (matchType == 3) {
+                    } else if (matchType == MATCH_TYPE_REGEX) {
                         // 正则匹配
                         try {
                             matched = Pattern.matches(keyword, buyerMessage);

@@ -16,6 +16,7 @@ import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoReplyConfigMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuGoodsAutoReplyRecordMapper;
 import com.feijimiao.xianyuassistant.mapper.XianyuOperationLogMapper;
 import com.feijimiao.xianyuassistant.service.AccountService;
+import com.feijimiao.xianyuassistant.utils.AesEncryptUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,8 +61,14 @@ public class AccountServiceImpl implements AccountService {
     
     @Autowired
     private XianyuOperationLogMapper operationLogMapper;
-    
+
+    @Autowired
+    private AesEncryptUtils aesEncryptUtils;
+
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /** Cookie 默认过期天数 */
+    private static final int DEFAULT_COOKIE_EXPIRE_DAYS = 30;
     
     /**
      * 获取当前时间字符串
@@ -144,28 +151,31 @@ public class AccountServiceImpl implements AccountService {
             cookieQuery.eq(XianyuCookie::getXianyuAccountId, accountId);
             XianyuCookie existingCookie = cookieMapper.selectOne(cookieQuery);
 
+            // 加密Cookie内容
+            String encryptedCookieText = aesEncryptUtils.encrypt(cookieText);
+
             if (existingCookie != null) {
                 // Cookie已存在，更新
-                existingCookie.setCookieText(cookieText);
+                existingCookie.setCookieText(encryptedCookieText);
                 existingCookie.setMH5Tk(mH5Tk);
                 existingCookie.setCookieStatus(1); // 有效状态
-                existingCookie.setExpireTime(getFutureTimeString(30)); // 30天后过期
+                existingCookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS)); // 使用配置的过期天数
                 existingCookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.updateById(existingCookie);
-                log.info("更新Cookie成功: cookieId={}, m_h5_tk={}", 
+                log.info("更新Cookie成功: cookieId={}, m_h5_tk={}",
                         existingCookie.getId(), mH5Tk != null ? "已保存" : "未提供");
             } else {
                 // 创建新Cookie
                 XianyuCookie cookie = new XianyuCookie();
                 cookie.setXianyuAccountId(accountId);
-                cookie.setCookieText(cookieText);
+                cookie.setCookieText(encryptedCookieText);
                 cookie.setMH5Tk(mH5Tk);
                 cookie.setCookieStatus(1);
-                cookie.setExpireTime(getFutureTimeString(30));
+                cookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS));
                 cookie.setCreatedTime(getCurrentTimeString());
                 cookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.insert(cookie);
-                log.info("创建新Cookie成功: cookieId={}, m_h5_tk={}", 
+                log.info("创建新Cookie成功: cookieId={}, m_h5_tk={}",
                         cookie.getId(), mH5Tk != null ? "已保存" : "未提供");
             }
 
@@ -196,8 +206,11 @@ public class AccountServiceImpl implements AccountService {
                 return null;
             }
 
+            // 解密Cookie内容
+            String decryptedCookieText = aesEncryptUtils.decrypt(cookie.getCookieText());
+
             log.info("获取Cookie成功: accountId={}", accountId);
-            return cookie.getCookieText();
+            return decryptedCookieText;
 
         } catch (Exception e) {
             log.error("获取Cookie失败: accountId={}", accountId, e);
@@ -281,6 +294,9 @@ public class AccountServiceImpl implements AccountService {
         try {
             log.info("更新Cookie: accountId={}", accountId);
 
+            // 加密Cookie内容
+            String encryptedCookieText = aesEncryptUtils.encrypt(cookieText);
+
             // 查询现有Cookie
             LambdaQueryWrapper<XianyuCookie> cookieQuery = new LambdaQueryWrapper<>();
             cookieQuery.eq(XianyuCookie::getXianyuAccountId, accountId);
@@ -288,18 +304,18 @@ public class AccountServiceImpl implements AccountService {
 
             if (cookie != null) {
                 // 更新现有Cookie
-                cookie.setCookieText(cookieText);
+                cookie.setCookieText(encryptedCookieText);
                 cookie.setCookieStatus(1);
-                cookie.setExpireTime(getFutureTimeString(30));
+                cookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS));
                 cookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.updateById(cookie);
             } else {
                 // 创建新Cookie
                 cookie = new XianyuCookie();
                 cookie.setXianyuAccountId(accountId);
-                cookie.setCookieText(cookieText);
+                cookie.setCookieText(encryptedCookieText);
                 cookie.setCookieStatus(1);
-                cookie.setExpireTime(getFutureTimeString(30));
+                cookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS));
                 cookie.setCreatedTime(getCurrentTimeString());
                 cookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.insert(cookie);
@@ -504,17 +520,20 @@ public class AccountServiceImpl implements AccountService {
             // 2. 提取_m_h5_tk
             String mH5Tk = extractMH5TkFromCookie(cookieText);
 
-            // 3. 查询现有Cookie
+            // 3. 加密Cookie内容
+            String encryptedCookieText = aesEncryptUtils.encrypt(cookieText);
+
+            // 4. 查询现有Cookie
             LambdaQueryWrapper<XianyuCookie> cookieQuery = new LambdaQueryWrapper<>();
             cookieQuery.eq(XianyuCookie::getXianyuAccountId, accountId);
             XianyuCookie cookie = cookieMapper.selectOne(cookieQuery);
 
             if (cookie != null) {
                 // 更新现有Cookie
-                cookie.setCookieText(cookieText);
+                cookie.setCookieText(encryptedCookieText);
                 cookie.setMH5Tk(mH5Tk);
                 cookie.setCookieStatus(1);
-                cookie.setExpireTime(getFutureTimeString(30));
+                cookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS));
                 cookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.updateById(cookie);
                 log.info("更新Cookie成功: accountId={}", accountId);
@@ -522,10 +541,10 @@ public class AccountServiceImpl implements AccountService {
                 // 创建新Cookie
                 cookie = new XianyuCookie();
                 cookie.setXianyuAccountId(accountId);
-                cookie.setCookieText(cookieText);
+                cookie.setCookieText(encryptedCookieText);
                 cookie.setMH5Tk(mH5Tk);
                 cookie.setCookieStatus(1);
-                cookie.setExpireTime(getFutureTimeString(30));
+                cookie.setExpireTime(getFutureTimeString(DEFAULT_COOKIE_EXPIRE_DAYS));
                 cookie.setCreatedTime(getCurrentTimeString());
                 cookie.setUpdatedTime(getCurrentTimeString());
                 cookieMapper.insert(cookie);

@@ -7,6 +7,7 @@ import com.feijimiao.xianyuassistant.mapper.XianyuCookieMapper;
 import com.feijimiao.xianyuassistant.service.OperationLogService;
 import com.feijimiao.xianyuassistant.service.TokenRefreshService;
 import com.feijimiao.xianyuassistant.service.WebSocketTokenService;
+import com.feijimiao.xianyuassistant.utils.AesEncryptUtils;
 import com.feijimiao.xianyuassistant.utils.XianyuSignUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,10 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
 
     @Autowired
     private OperationLogService operationLogService;
-    
+
+    @Autowired
+    private AesEncryptUtils aesEncryptUtils;
+
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
@@ -78,8 +82,10 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
                 log.warn("【账号{}】未找到Cookie，无法刷新token", accountId);
                 return false;
             }
-            
-            String cookieStr = cookie.getCookieText();
+
+            // 解密Cookie内容
+            String encryptedCookieStr = cookie.getCookieText();
+            String cookieStr = aesEncryptUtils.decrypt(encryptedCookieStr);
             Map<String, String> cookies = XianyuSignUtils.parseCookies(cookieStr);
 
             // 2. 第一次请求：获取新的_m_h5_tk
@@ -139,7 +145,9 @@ public class TokenRefreshServiceImpl implements TokenRefreshService {
 
                     // 更新数据库
                     String newCookieStr = XianyuSignUtils.formatCookies(cookies);
-                    cookie.setCookieText(newCookieStr);
+                    // 加密新的Cookie内容
+                    String newEncryptedCookieStr = aesEncryptUtils.encrypt(newCookieStr);
+                    cookie.setCookieText(newEncryptedCookieStr);
                     cookie.setMH5Tk(newMh5tk);
                     cookieMapper.updateById(cookie);
 

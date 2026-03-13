@@ -8,6 +8,7 @@ import com.feijimiao.xianyuassistant.exception.CaptchaRequiredException;
 import com.feijimiao.xianyuassistant.mapper.XianyuCookieMapper;
 
 import com.feijimiao.xianyuassistant.service.WebSocketTokenService;
+import com.feijimiao.xianyuassistant.utils.AesEncryptUtils;
 import com.feijimiao.xianyuassistant.utils.HttpClientUtils;
 import com.feijimiao.xianyuassistant.utils.XianyuSignUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,9 @@ public class WebSocketTokenServiceImpl implements WebSocketTokenService {
     
     @Autowired
     private com.feijimiao.xianyuassistant.mapper.XianyuAccountMapper xianyuAccountMapper;
+
+    @Autowired
+    private AesEncryptUtils aesEncryptUtils;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     
@@ -337,9 +341,10 @@ public class WebSocketTokenServiceImpl implements WebSocketTokenService {
             
             // 2. 清除旧token，强制重新获取
             clearToken(accountId);
-            
-            // 3. 获取新token
-            String newToken = getAccessToken(accountId, cookie.getCookieText(), "device_" + accountId);
+
+            // 3. 解密Cookie并获取新token
+            String decryptedCookieText = aesEncryptUtils.decrypt(cookie.getCookieText());
+            String newToken = getAccessToken(accountId, decryptedCookieText, "device_" + accountId);
             
             if (newToken != null && !newToken.isEmpty()) {
                 log.info("【账号{}】✅ WebSocket token刷新成功", accountId);

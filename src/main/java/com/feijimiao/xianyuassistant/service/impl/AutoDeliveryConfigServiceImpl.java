@@ -8,6 +8,7 @@ import com.feijimiao.xianyuassistant.controller.dto.AutoDeliveryConfigReqDTO;
 import com.feijimiao.xianyuassistant.controller.dto.AutoDeliveryConfigRespDTO;
 import com.feijimiao.xianyuassistant.controller.dto.AutoDeliveryConfigQueryReqDTO;
 import com.feijimiao.xianyuassistant.service.AutoDeliveryConfigService;
+import com.feijimiao.xianyuassistant.utils.XssFilterUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,15 @@ public class AutoDeliveryConfigServiceImpl implements AutoDeliveryConfigService 
     @Override
     public ResultObject<AutoDeliveryConfigRespDTO> saveOrUpdateConfig(AutoDeliveryConfigReqDTO reqDTO) {
         try {
+            // XSS过滤：清理自动发货内容中的恶意脚本
+            String filteredContent = XssFilterUtils.filter(reqDTO.getAutoDeliveryContent());
+            reqDTO.setAutoDeliveryContent(filteredContent);
+            log.debug("自动发货内容XSS过滤完成");
+
             // 检查是否已存在配置
             XianyuGoodsAutoDeliveryConfig existingConfig = autoDeliveryConfigMapper
                     .findByAccountIdAndGoodsId(reqDTO.getXianyuAccountId(), reqDTO.getXyGoodsId());
-            
+
             XianyuGoodsAutoDeliveryConfig config;
             if (existingConfig != null) {
                 // 更新现有配置
@@ -48,14 +54,14 @@ public class AutoDeliveryConfigServiceImpl implements AutoDeliveryConfigService 
                 // 创建新配置
                 config = new XianyuGoodsAutoDeliveryConfig();
                 BeanUtils.copyProperties(reqDTO, config);
-                
+
                 autoDeliveryConfigMapper.insert(config);
                 log.info("创建自动发货配置成功，ID: {}", config.getId());
             }
-            
+
             AutoDeliveryConfigRespDTO respDTO = new AutoDeliveryConfigRespDTO();
             BeanUtils.copyProperties(config, respDTO);
-            
+
             return ResultObject.success(respDTO);
         } catch (Exception e) {
             log.error("保存自动发货配置失败", e);
